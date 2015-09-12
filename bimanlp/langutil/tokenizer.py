@@ -4,11 +4,12 @@ import string
 if __package__ is None:
    from os import sys, path
    sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+   from utils.errors import StopWordMustList
 else:
    from utils.errors import StopWordMustList
 
 class tokenize():
-   def WordTokenize(self, sentence,stopword=None,remove_punct=False):
+   def WordTokenize(self, sentence, stopword=None, remove_punct=False):
        # Split kalimat kedalam kata-kata terpisah berdasar 'spasi'
 
        words = re.split(r'\s',sentence)
