@@ -3,6 +3,7 @@ import langmodel.ngram as ngram
 
 def TextTokenizer(sen):
     # Materi Syntatic proses:text tokenizing
+    # http://blog.pantaw.com/syntatic-proses-text-tokenizing/
     stopwords= ['kah','lah','pun','jah','jeh','mu','ku','ke','di','tapi','saya','kamu','mereka','dia', \
           'kita','adalah','dan','jika','kalau','sama','yang', \
           'sekarang','nanti','besok','kemarin','kemaren','nya','na',\
@@ -17,6 +18,7 @@ def TextTokenizer(sen):
 
 def NgramModel(sen):
     # Materi Syntatic proses:N-Gram
+    # http://blog.pantaw.com/syntatic-proses-n-grams/
     kata = TextTokenizer(sen)
     kata = ngram.ngrams(kata,n=2,n_jump=1)
     
