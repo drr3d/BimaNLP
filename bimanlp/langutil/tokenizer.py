@@ -42,3 +42,6 @@ class tokenize():
                return
        
        return words
+
+   def CharTokenize(self,word):
+      return list(word)
