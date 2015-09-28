@@ -2,7 +2,7 @@
 Repository untuk kode-kode Python pendukung tutorial NLP dalam bahasa Indonesia
 
 ## Overview
-**BimaNLP** adalah Natural Language Processing untuk **bahasa Indonesia**
+**BimaNLP** adalah open source Natural Language Processing framework untuk **bahasa Indonesia**
 
 ## Dependencies
 
