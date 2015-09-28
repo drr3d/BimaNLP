@@ -24,7 +24,7 @@ Atau bisa langsung di sini atau per pembahasan di:
 ## Note
 Jika sobat merasa terbantu dengan karya kami, pertimbangkan untuk:
 
-1. Kunjungi web site utama kami di: [pantaw](http://www.pantaw.com)
-2. Mengetahui siapa kami: [about](http://www.pantaw.com/about)
-3. Donasi untuk kami, petunjuk bisa lihat di: [donate](http://www.pantaw.com/donate)
-4. Tertarik dengan A.P.I kami lainnya, petunjuk bisa lihat di: [A.P.I](http://www.pantaw.com/api)
+1. Kunjungi web site utama kami di: [pantaw](http://pantaw.com)
+2. Mengetahui siapa kami: [about](http://pantaw.com/about)
+3. Donasi untuk kami, petunjuk bisa lihat di: [donate](http://pantaw.com/donate)
+4. Tertarik dengan A.P.I kami lainnya, petunjuk bisa lihat di: [A.P.I](http://pantaw.com/api)
