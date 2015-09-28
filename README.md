@@ -10,6 +10,9 @@ Repository untuk kode-kode Python pendukung tutorial NLP dalam bahasa Indonesia
 2. [Sklearn v .0.15.0](http://scikit-learn.org/stable/)
 3. [NLTK 2.0](http://www.nltk.org/)
 
+## License
+[GNU General Public License (GPL) 2.0](http://www.gnu.org/licenses/gpl-2.0.html)
+
 ## Other
 Untuk pembahasan bisa menuju thread kami di kaskus:
 
@@ -18,7 +21,7 @@ Untuk pembahasan bisa menuju thread kami di kaskus:
 
 Atau bisa langsung di sini atau per pembahasan di: 
 
-1. [blog](http://www.blog.pantaw.com)
+1. [blog](http://blog.pantaw.com)
 
 
 ## Note
