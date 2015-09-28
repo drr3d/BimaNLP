@@ -6,9 +6,9 @@ Repository untuk kode-kode Python pendukung tutorial NLP dalam bahasa Indonesia
 
 ## Dependencies
 
-1.Python 2.7
-2.[Sklearn v .0.15.0](http://scikit-learn.org/stable/)
-3.[NLTK 2.0](http://www.nltk.org/)
+1. Python 2.7
+2. [Sklearn v .0.15.0](http://scikit-learn.org/stable/)
+3. [NLTK 2.0](http://www.nltk.org/)
 
 ## Other
 Untuk pembahasan bisa menuju thread kami di kaskus:
