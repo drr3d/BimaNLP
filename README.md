@@ -7,12 +7,14 @@ Repository untuk kode-kode Python pendukung tutorial NLP dalam bahasa Indonesia
 ## Dependencies
 
 BimaNLP:
+
 1. Python 2.7
 2. [Sklearn v0.16.0](http://scikit-learn.org/stable/)
 3. [NLTK 2.0](http://www.nltk.org/)
 4. [NumPy v1.9](http://www.numpy.org/)
 
 DataAgent:
+
 1. [Beautiful Soup](http://www.crummy.com/software/BeautifulSoup/#Download)
 2. [Tweepy](http://www.tweepy.org/)
 3. [Bottle](http://bottlepy.org/docs/dev/index.html)
