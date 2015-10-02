@@ -5,7 +5,7 @@ if __package__ is None:
 else:
    from utils.errors import NGramErr
    
-def ngrams(tok_sentence,n=1,n_jump=0):
+def ngrams(tok_sentence,n=1,njump=0):
     n_gram=n # var berisi jumlah n pada N-Gram, default 1(Uni-Gram)
     n_gram_words=[]
     kata = tok_sentence # var dengan type list berisi tokenize sentence
@@ -37,11 +37,11 @@ def ngrams(tok_sentence,n=1,n_jump=0):
                     for x in range(n_gram):
                         if x > 0:
                             # Untuk mendapat model yang lebih bervariasi, 
-                            # kita tambahkan n_jump parameter
-                            if z+n_gram-1+n_jump< len(kata):
-                                if kata[z+x+n_jump] not in ngram:
+                            # kita tambahkan njump parameter
+                            if z+n_gram-1+njump< len(kata):
+                                if kata[z+x+njump] not in ngram:
                                     # Cegah sample yang berulang pada kumpulan sample
-                                    ngram.append(kata[z+x+n_jump])
+                                    ngram.append(kata[z+x+njump])
                             else:
                                 if kata[0] not in ngram:
                                     ngram.append(kata[0])

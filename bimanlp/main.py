@@ -1,4 +1,5 @@
 from langutil.tokenizer import tokenize
+from langutil.stemmer import ChaosStemmer
 import langmodel.ngram as ngram
 
 def TextTokenizer(sen):
@@ -11,7 +12,7 @@ def TextTokenizer(sen):
           'sebab','oleh','malah','memang']
         
     tok = tokenize()
-    kata = tok.WordTokenize(sen,remove_punct=True)
+    kata = tok.WordTokenize(sen,removepunct=True)
     if kata:
         print "kalimat setelah di tokenize: ", kata, "\n"
     return kata
@@ -20,13 +21,32 @@ def NgramModel(sen):
     # Materi Syntatic proses:N-Gram
     # http://blog.pantaw.com/syntatic-proses-n-grams/
     kata = TextTokenizer(sen)
-    kata = ngram.ngrams(kata,n=2,n_jump=1)
+    kata = ngram.ngrams(kata,n=2,njump=0)
     
-    print "Jumlah populasi: ", len(kata)
+    print "Jumlah sample: ", len(kata)
     for z in kata:
         print ' '.join(z)
+    print "\n"
+
+def stemm(toksen):
+    # Materi Syntatic proses: Text Stemmer bahasa Indonesia dengan Python
+    # http://blog.pantaw.com/syntatic-proses-text-stemmer-bahasa-indonesia-dengan-python/
+    morph = ChaosStemmer('C:\\BimaNLP\\dataset\\','tb_katadasar.txt')
+    
+    for z in words:
+        morph.stemm(z)
+        #menyeimbangkan,menyerukan,mengatakan,berkelanjutan,pembelajaran,pengepulannya
+        #print "Dirty guess word is: ",morph.getFoundGuessWord()
+        #print "Detected Affix is: ", morph.getFoundSuffix(),"\n"
+        print "Root word for word: ", z ," -> is: ", morph.getRootWord()
+        print "Filtered guess word is:", morph.getFilteredGuessWord(),"\n"
         
 if __name__ == "__main__":
-    kata = 'makan nasi goreng dipinggir empang, memang !! sungguh  nikmat sekali.'
-    NgramModel(kata)
+    kata1 = 'memakan nasi goreng dipinggir empang, memang !! sungguh  nikmat sekali.'
+    kata2 = 'penghasilannya hanya cukup untuk memenuhi keseluruhan kebutuhan kedua buah hati kesayangannya'
+    #NgramModel(kata1)
+
+    ## Stemming hanya membutuhkan textTokenize
+    words = TextTokenizer(kata2)
+    stemm(words)
 

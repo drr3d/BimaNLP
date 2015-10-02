@@ -9,12 +9,12 @@ else:
    from utils.errors import StopWordMustList
 
 class tokenize():
-   def WordTokenize(self, sentence, stopword=None, remove_punct=False):
+   def WordTokenize(self, sentence, stopword=None, removepunct=False):
        # Split kalimat kedalam kata-kata terpisah berdasar 'spasi'
 
        words = re.split(r'\s',sentence)
 
-       if remove_punct:
+       if removepunct:
            # Buat translation table untuk digunakan di string.translate
            table = string.maketrans("","")
 
