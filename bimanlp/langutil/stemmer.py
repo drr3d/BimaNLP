@@ -41,12 +41,15 @@ else:
    from utils.autovivified import AutoVivification
    
 class ChaosStemmer:
-  #### Define class attribute ####
-  prefix = {2:['pe', 'di', 'se', 'ke', 'me','be','si','te'], 3:['ber', 'mem', 'men', 'pem', 'pen', 'per',  'ter', 'nyo','pel','bel'],
-            4:['meng', 'meny', 'peng', 'peny'], 5:['menge',  'penge']}
-  suffix = {1:['i'], 2:['an','in','ku','mu'], 3:['kan','lah', 'kah', 'nya','pun']}
-  infix = {2:['el', 'em', 'er']}
-  vokal = ['a','i','u','e','o']
+  ###### Define class attribute ######
+  # As per 2015-10-03, kita rubah struktur storage dari prefix, suffix, infix dan vokal
+  #      dari dict(list) => dict(tupple)
+  # Why? please visit: http://stackoverflow.com/questions/1708510/python-list-vs-tuple-when-to-use-each
+  prefix = {2:('pe', 'di', 'se', 'ke', 'me','be','si','te'), 3:('ber', 'mem', 'men', 'pem', 'pen', 'per',  'ter', 'nyo','pel','bel'),
+            4:('meng', 'meny', 'peng', 'peny'), 5:('menge',  'penge')}
+  suffix = {1:('i'), 2:('an','in','ku','mu'), 3:('kan','lah', 'kah', 'nya','pun')}
+  infix = {2:('el', 'em', 'er')}
+  vokal = ('a','i','u','e','o')
   
   foundsuffix = defaultdict(list)
   guessword = []
