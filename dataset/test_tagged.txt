@@ -1,0 +1,14 @@
+bisa/MD tolong/NN ambilkan/VBI bulpen/NN itu/DT
+bisa/MD pinjam/NN pensil/NN itu/DT untuk/IN menuliskan/VBT nomornya/XX
+pakai/VBT spidol/NN merah/VBT saja/ADV kalau/SC untuk/IN menulis/VBT yang/SC seperti/SC itu/DT
+tanah/NNC merah/VBT banyak/JJ mengandung/VBT zat/NN hara/NN yang/SC bagus/JJ untuk/IN tanaman/NN
+dia/VBI menggunakan/VBT bulpen/NN dengan/IN tinta/NN merah/VBT untuk/IN menandatangani/VBT perjanjian/NN diatas/VBI selembar/NN kertas/NNC
+tulisan/NN diatas/VBI kertas/NNC itu/DT sungguh/NN indah/NNP
+dia/VBI menulis/VBT pernyataan/NNU itu/DT ,/KKORD kemudian/VBI ditandatanganinya/VBI
+ibu/NN guru/NNC menulis/VBT pelajaran/NN di/IN papan/NN tulis/NN dengan/IN kapur/NN
+perumahan/NN itu/DT banyak/JJ menggunakan/VBT cat/NN berwarna/VBI biru/NN
+bulpen/NN yang/SC biasa/JJ ia/PRP gunakan/VBI untuk/IN mencatat/VBT ,/KKORD tertinggal/VBI di/IN rumahnya/NN
+bulpen/NN dengan/IN tinta/NN berwarna/VBI hitam/JJ banyak/JJ digunakan/VBI di/IN seluruh/DI dunia/NNP
+ia/PRP sungguh/NN marah/NN ketika/SC bulpen/NN berwananya/VBI hilang/VBI
+sungguh/NN indah/ADJ sekali/ADV taman/NN bergantung/V itu/DT
+hari/NN ini/DT indah/ADJ ,/KKORD penuh/ADJ dengan/CC warna/NNP

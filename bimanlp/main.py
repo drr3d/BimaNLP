@@ -12,7 +12,7 @@ def TextTokenizer(sen):
           'sebab','oleh','malah','memang']
         
     tok = tokenize()
-    kata = tok.WordTokenize(sen,removepunct=True)
+    kata = tok.WordTokenize(sen,removepunct=False)
     if kata:
         print "kalimat setelah di tokenize: ", kata, "\n"
     return kata
@@ -44,9 +44,10 @@ def stemm(toksen):
 if __name__ == "__main__":
     kata1 = 'memakan nasi goreng dipinggir empang, memang !! sungguh  nikmat sekali.'
     kata2 = 'penghasilannya hanya cukup untuk memenuhi keseluruhan kebutuhan kedua buah hati kesayangannya'
+    kata3 = 'ketiga burung kecil itu saling siul-menyiul bersahut-sahutan di pagi hari'
     #NgramModel(kata1)
 
     ## Stemming hanya membutuhkan textTokenize
-    words = TextTokenizer(kata2)
+    words = TextTokenizer(kata3.lower())#
     stemm(words)
 

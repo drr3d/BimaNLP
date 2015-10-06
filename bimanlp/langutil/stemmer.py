@@ -179,7 +179,7 @@ class ChaosStemmer:
         ##      mengodekan => root word yang betul adalah "kode"
         ##      tetapi karena "ode" juga terdapat pada dataset, "kode" jadi tidak tertangkap
         #print wordtoprocess 
-        if self.isInWordlistCsv(naffix+wordtoprocess):
+        if self.isInWordlistCsv(naffix+wordtoprocess): #<= karena ini kepengurusan root nya jadi kurus, harusnya urus
           procword = naffix+wordtoprocess
         else:
            if self.isInWordlistCsv(wordtoprocess):
@@ -284,7 +284,18 @@ class ChaosStemmer:
             # Masukkan sampel jika terdapat dalam kamus kata dasar
             self.foundedRootWord = procword
             break
-
+         
+  def redupChecker(self, wordtoprocess):
+     # Pengecekan reduplikasi kata seperti: bermalas-malasan, bersiul-siulan
+     # pada dasarnya kita cukup mengembalikan kata pertama saja untuk diproses
+     # mencari root wordnya
+     if "-" in wordtoprocess:
+        firstWord = wordtoprocess.split('-',1)[0]
+     else:
+        firstWord=wordtoprocess
+     
+     return firstWord 
+  
   def stemm(self,wordtofind):
     # Clear any kind of class attribute
     self.foundsuffix = defaultdict(list)
@@ -292,6 +303,9 @@ class ChaosStemmer:
     self.foundedRootWord=''
     self.hasSpecial=False
 
+    # Paling awal, pengecekan reduplikasi pada kata
+    wordtofind = self.redupChecker(wordtofind)
+    
     # Cek dahulu, apakah kata yang diinput sudah berbentuk kata dasar
     if self.isInWordlistCsv(wordtofind)==True:
       self.foundedRootWord=wordtofind

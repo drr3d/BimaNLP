@@ -1,3 +1,9 @@
 ######## 2015-10-03 #########
 	> stemmer.py: merubah struktur storage dari prefix, suffix, infix dan vokal
 			dari dict(list) => dict(tupple)
+
+
+######## 2015-10-06 #########
+	> stemmer.py: menambahkan fungsi "redupChecker" yang bertugas untuk deteksi
+			kata reduplikasi('bermalas-malasan,bersahut-sahutan') 
+			agar dapat dicari root wordnya
