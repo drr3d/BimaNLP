@@ -289,6 +289,10 @@ class ChaosStemmer:
      # Pengecekan reduplikasi kata seperti: bermalas-malasan, bersiul-siulan
      # pada dasarnya kita cukup mengembalikan kata pertama saja untuk diproses
      # mencari root wordnya
+     """
+         kenapa search string menggunakan 'in'?
+         please reffer to: http://stackoverflow.com/questions/4901523/whats-a-faster-operation-re-match-search-or-str-find
+     """
      if "-" in wordtoprocess:
         firstWord = wordtoprocess.split('-',1)[0]
      else:
@@ -377,6 +381,7 @@ class ChaosStemmer:
     # grup2:
     #    pe, per => permutasi(2,1) = 2!/(2-1)!=2
     # maka kita akan mendapatkan 4 kali jumlah perulangan dalam pembentukan prefix gabungan
+    # tentu saja jumlah akhir perulangan harus ditambahkan hasil banyaknya suffix gabungan dan infix    
     ###############################################################################################
     # Jika ternyata ada kata berimbuhan yang memiliki spesial affix, misal saja untuk
     # kondisi gabungan prefix yang sama, maka asumsi ini tidak bisa digunakan

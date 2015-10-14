@@ -7,3 +7,8 @@
 	> stemmer.py: menambahkan fungsi "redupChecker" yang bertugas untuk deteksi
 			kata reduplikasi('bermalas-malasan,bersahut-sahutan') 
 			agar dapat dicari root wordnya
+
+
+######## 2015-10-14 #########
+	> dataagent dibuang, akan kami buat tersendiri untuk permasalahan data collection
+		nanti akan dimasukkan kedalam BimaTM(Text mining dan Analytic tool untuk bahasa Indonesia)

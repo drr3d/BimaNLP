@@ -11,3 +11,5 @@
 3. Source tb_tagged_katadasar diambil dari KBBI
 
 4. Source tb_lexicon_tagged diambil dari KBBI
+
+5. http://www.panl10n.net/indonesia/

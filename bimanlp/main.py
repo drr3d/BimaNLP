@@ -48,6 +48,6 @@ if __name__ == "__main__":
     #NgramModel(kata1)
 
     ## Stemming hanya membutuhkan textTokenize
-    words = TextTokenizer(kata3.lower())#
+    words = TextTokenizer(kata3.lower())#kata3.lower()
     stemm(words)
 
