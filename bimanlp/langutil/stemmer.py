@@ -58,12 +58,12 @@ class ChaosStemmer:
   hasSpecial = False
   
   
-  def __init__(self, langdbfolder,datasetname,forcefindinfix=False):
+  def __init__(self, langdbfolder, datasetname, forcefindinfix=False):
     #### Define instance attribute ####
     self.languageDBFolder = langdbfolder
     self.datasetName = datasetname
 
-  def isInWordlistCsv(self,word):
+  def isInWordlistCsv(self, word):
     ## disini saya tidak peduli dengan urutan kata, pada dataset "kamus kata dasar"
     ## dan seluruh kata dasar pada kamus unique(tidak ada duplikasi)
     ## dan fungsi ini akan sering sekali dipakai, karena itu saya lebih memilih menggunakan

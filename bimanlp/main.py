@@ -1,5 +1,7 @@
 from langutil.tokenizer import tokenize
 from langutil.stemmer import ChaosStemmer
+from langmodel.modeler.markov import NGramModels
+
 import langmodel.ngram as ngram
 
 def TextTokenizer(sen):
@@ -40,14 +42,29 @@ def stemm(toksen):
         #print "Detected Affix is: ", morph.getFoundSuffix(),"\n"
         print "Root word for word: ", z ," -> is: ", morph.getRootWord()
         print "Filtered guess word is:", morph.getFilteredGuessWord(),"\n"
+
+def NGramLangModel():
+    dataset=[['i','am','sam'],
+         ['sam','i','am'],
+         ['i','do','not','like','green','eggs','and','ham']
+         ]
+
+    lms = NGramModels()
+    models = lms.train(dataset,smooth='ls')
+
+    for k, v in models.iteritems():
+        print k
+        for key,val in v.iteritems():
+            print key,val
+        print "\n"
         
 if __name__ == "__main__":
     kata1 = 'memakan nasi goreng dipinggir empang, memang !! sungguh  nikmat sekali.'
     kata2 = 'penghasilannya hanya cukup untuk memenuhi keseluruhan kebutuhan kedua buah hati kesayangannya'
     kata3 = 'ketiga burung kecil itu saling siul-menyiul bersahut-sahutan di pagi hari'
-    #NgramModel(kata1)
 
     ## Stemming hanya membutuhkan textTokenize
-    words = TextTokenizer(kata3.lower())#kata3.lower()
-    stemm(words)
+    #words = TextTokenizer(kata3.lower())#kata3.lower()
+    #stemm(words)
 
+    NGramLangModel()

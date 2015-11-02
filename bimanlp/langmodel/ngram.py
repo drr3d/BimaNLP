@@ -4,7 +4,7 @@ if __package__ is None:
    from utils.errors import NGramErr
 else:
    from utils.errors import NGramErr
-   
+
 def ngrams(tok_sentence,n=1,njump=0):
     n_gram=n # var berisi jumlah n pada N-Gram, default 1(Uni-Gram)
     n_gram_words=[]
@@ -59,4 +59,3 @@ def ngrams(tok_sentence,n=1,njump=0):
             print "Unexpected other error:", sys.exc_info()[0]
             return
     return n_gram_words
-

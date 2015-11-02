@@ -12,3 +12,7 @@
 ######## 2015-10-14 #########
 	> dataagent dibuang, akan kami buat tersendiri untuk permasalahan data collection
 		nanti akan dimasukkan kedalam BimaTM(Text mining dan Analytic tool untuk bahasa Indonesia)
+
+
+######## 2015-11-02 #########
+	> Menambah N-Gram Language model
