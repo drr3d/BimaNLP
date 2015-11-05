@@ -10,6 +10,34 @@ else:
     from langmodel.vocab import SimpleVocab
     from langmodel import ngram
     from langutil.tokenizer import tokenize
+
+def constructVocab(vect, totalword, nforgram, separate=True):
+    # kata masuk sudah ditokenize
+    # kalo buat N-Gram brarti: ['saya sedang', 'sedang makan',...,'warung depan']
+    freqDist=dict()
+    total_word=totalword
+
+    dataset=[]
+    for z in vect:
+        # Semua yang masuk ke language model ngram, harus melalui proses tokenize->ngram
+        if separate:
+            z.insert(0,'<s>')
+            z.insert(len(z),'</s>')
+        dataset.append(ngram.ngrams(z,n=nforgram))
+        
+    for z in xrange(len(dataset)):
+        for y in xrange(len(dataset[z])):
+            # Untuk menangani bentuk Selain bigram, karena itu kita menggunakan format ini
+            freqDist.setdefault(' '.join(dataset[z][y]),0)
+            
+            # C(Wi) => rekam jumlah kemunculan suatu kata
+            freqDist[' '.join(dataset[z][y])]+=1
+
+    if totalword==0:
+        # self.total_word = N = Jumlah(C) seluruh kata/sample pada kalimat/ruang sample
+        total_word = sum(freqDist.values())
+
+    return freqDist,total_word
         
 class NGramModels:
     """
@@ -24,35 +52,10 @@ class NGramModels:
     def __init__(self, ngram=2):
         self.nforgram = ngram
         
-    def constructVocab(self,vect,separate=True):
-        # kata masuk sudah ditokenize
-        # kalo buat N-Gram brarti: ['saya sedang', 'sedang makan',...,'warung depan']
-        freqDist=dict()
-
-        dataset=[]
-        for z in vect:
-            # Semua yang masuk ke language model ngram, harus melalui proses tokenize->ngram
-            if separate:
-                z.insert(0,'<s>')
-                z.insert(len(z),'</s>')
-            dataset.append(ngram.ngrams(z,n=self.nforgram))
-            
-        for z in xrange(len(dataset)):
-            for y in xrange(len(dataset[z])):
-                # Untuk menangani bentuk Selain bigram, karena itu kita menggunakan format ini
-                freqDist.setdefault(' '.join(dataset[z][y]),0)
-                
-                # C(Wi) => rekam jumlah kemunculan suatu kata
-                freqDist[' '.join(dataset[z][y])]+=1
-
-        if self.total_word==0:
-            # self.total_word = N = Jumlah(C) seluruh kata/sample pada kalimat/ruang sample
-            self.total_word = sum(freqDist.values())
-
-        self.raw_vocab = freqDist
-
     def MLE(self,n,N,ls=False,V=0):
         """ Estimasi nilai Probabilitas suatu Kata """
+        ### Bisa dibilang juga ini adalah proses training dengan MLE ###
+        
         # Compute Maximum Likelihood Estimates for individual n-gram probabilities
         # Problem using this as estimator: Weak when counts(N) are low or Unknown word is present
         
@@ -69,7 +72,7 @@ class NGramModels:
 
         return round(float(n)/float(N),4)
 
-    def train(self,vect,smooth=None):
+    def train(self,vect,smooth=None,separate=True):
         """
         In the study of probability, given at least two random variables X, Y, ...,that are defined on a probability space S,       
         the joint probability distribution for X, Y, ... is a probability distribution
@@ -85,7 +88,9 @@ class NGramModels:
         tok = tokenize()
         for i in range(1,self.nforgram+1):            
             self.nforgram=i
-            self.constructVocab(vect)
+            #self.constructVocab(vect)
+            self.raw_vocab,self.total_word = constructVocab(vect, self.total_word, \
+                                                            nforgram=self.nforgram, separate=separate)
 
             for k, v in self.raw_vocab.iteritems():
                 # Hitung:

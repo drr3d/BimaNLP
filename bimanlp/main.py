@@ -40,17 +40,17 @@ def stemm(toksen):
         #menyeimbangkan,menyerukan,mengatakan,berkelanjutan,pembelajaran,pengepulannya
         #print "Dirty guess word is: ",morph.getFoundGuessWord()
         #print "Detected Affix is: ", morph.getFoundSuffix(),"\n"
-        print "Root word for word: ", z ," -> is: ", morph.getRootWord()
-        print "Filtered guess word is:", morph.getFilteredGuessWord(),"\n"
+        print "Root kata untuk kata: ", z ," -> adalah: ", morph.getRootWord()
+        print "Filtered guess word adalah:", morph.getFilteredGuessWord(),"\n"
 
 def NGramLangModel():
-    dataset=[['i','am','sam'],
-         ['sam','i','am'],
-         ['i','do','not','like','green','eggs','and','ham']
+    dataset=[['saya','suka','kamu'],
+         ['kamu','suka','saya'],
+         ['saya','tidak','suka','jika','kamu','pergi','dengan','dia']
          ]
 
     lms = NGramModels()
-    models = lms.train(dataset,smooth='ls')
+    models = lms.train(dataset,smooth='',separate=True)
 
     for k, v in models.iteritems():
         print k
