@@ -24,7 +24,7 @@ def constructVocab(vect, totalword, nforgram, separate=True):
             z.insert(0,'<s>')
             z.insert(len(z),'</s>')
         dataset.append(ngram.ngrams(z,n=nforgram))
-        
+
     for z in xrange(len(dataset)):
         for y in xrange(len(dataset[z])):
             # Untuk menangani bentuk Selain bigram, karena itu kita menggunakan format ini
@@ -37,6 +37,7 @@ def constructVocab(vect, totalword, nforgram, separate=True):
         # self.total_word = N = Jumlah(C) seluruh kata/sample pada kalimat/ruang sample
         total_word = sum(freqDist.values())
 
+    print ("Vocab size for N=%i is:%i, with Total Word(corpus length):%i" % (nforgram,len(freqDist),total_word))
     return freqDist,total_word
         
 class NGramModels:

@@ -16,3 +16,9 @@
 
 ######## 2015-11-02 #########
 	> Menambah N-Gram Language model
+		=> bimanlp/langmodel/modeler/markov.py
+
+
+######## 2015-11-05 ########
+	> ngram.py: menon-aktifkan repetion checker ketika memasukkan sample, karena berpotensi
+			menjadi bug dalam proses N-Gram Language Model

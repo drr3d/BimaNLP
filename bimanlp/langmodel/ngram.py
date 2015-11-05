@@ -39,21 +39,21 @@ def ngrams(tok_sentence,n=1,njump=0):
                             # Untuk mendapat model yang lebih bervariasi, 
                             # kita tambahkan njump parameter
                             if z+n_gram-1+njump< len(kata):
-                                if kata[z+x+njump] not in ngram:
+                                #if kata[z+x+njump] not in ngram:
                                     # Cegah sample yang berulang pada kumpulan sample
-                                    ngram.append(kata[z+x+njump])
+                                 ngram.append(kata[z+x+njump])
                             else:
-                                if kata[0] not in ngram:
-                                    ngram.append(kata[0])
+                                #if kata[0] not in ngram:
+                                 ngram.append(kata[0])
                         else:
-                            if kata[z+x] not in ngram:
-                                ngram.append(kata[z+x])
+                            #if kata[z+x] not in ngram:
+                            ngram.append(kata[z+x])
 
                     # Ada beberapa kasus ketika kita menerapkan jump parameter (biasanya jika jump param cukup besar)
                     # terdapat sample yang tidak masuk ke karakteristik populasi N-Gram yang kita inginkan
                     # karena itu kita harus menyaring ulang seluruh sample populasi
-                    if len(ngram) == n_gram and ngram not in n_gram_words:
-                        n_gram_words.append(ngram)
+                    #if len(ngram) == n_gram and ngram not in n_gram_words:
+                    n_gram_words.append(ngram)
             ################ Akhir proses mengelompokkan kata kedalam N-Gram #################
         except:
             print "Unexpected other error:", sys.exc_info()[0]
