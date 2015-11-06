@@ -17,7 +17,7 @@ def ngrams(tok_sentence,n=1,njump=0):
             if len(tok_sentence) == 0:
                 raise NGramErr({"message":"Panjang tokenized sentence tidak boleh 0!!", "tokenize":len(tok_sentence)})
 
-            if n_gram >= len(kata):
+            if n_gram > len(kata):
                 print "Len N-Gram: %i => Len Sentence: %i"%( n_gram, len(kata))
                 raise NGramErr({"message":"Total N-Gram tidak boleh melebihi Total Kata", \
                                 "tokenize":len(tok_sentence)})

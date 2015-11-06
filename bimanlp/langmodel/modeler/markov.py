@@ -11,7 +11,7 @@ else:
     from langmodel import ngram
     from langutil.tokenizer import tokenize
 
-def constructVocab(vect, totalword, nforgram, separate=True):
+def constructVocab(vect, totalword, nforgram, separate=True, njump=0):
     # kata masuk sudah ditokenize
     # kalo buat N-Gram brarti: ['saya sedang', 'sedang makan',...,'warung depan']
     freqDist=dict()
@@ -21,9 +21,11 @@ def constructVocab(vect, totalword, nforgram, separate=True):
     for z in vect:
         # Semua yang masuk ke language model ngram, harus melalui proses tokenize->ngram
         if separate:
-            z.insert(0,'<s>')
-            z.insert(len(z),'</s>')
+            if '<s>' not in z: z.insert(0,'<s>')
+            if '</s>' not in z: z.insert(len(z),'</s>')
         dataset.append(ngram.ngrams(z,n=nforgram))
+        if njump>0:
+           dataset.append(ngram.ngrams(z,n=nforgram,njump=njump)) 
 
     for z in xrange(len(dataset)):
         for y in xrange(len(dataset[z])):
