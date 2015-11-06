@@ -45,23 +45,13 @@ def stemm(toksen):
         print "Filtered guess word adalah:", morph.getFilteredGuessWord(),"\n"
 
 def NGramLangModel():
-    cl = Loader('C:\\BimaNLP\\dataset\\')
-    f = cl.loadLarge('tb_kota_bywiki.txt',lazy_load=True)
-    w = cl.processRaw(f)
-    r = cl.rawForLangmodel(w)
-
     dataset=[['saya','suka','kamu'],
          ['kamu','suka','saya'],
          ['saya','tidak','suka','jika','kamu','pergi','dengan','dia']
          ]
 
-    dataset2=[['i','am','sam'],
-         ['sam','i','am'],
-         ['i','do','not','like','green','eggs','and','ham']
-         ]
-
     lms = NGramModels()
-    models = lms.train(dataset2,smooth='',separate=True)
+    models = lms.train(dataset,smooth='',separate=True)
 
     print "\n##########################################################"    
     for k, v in models.iteritems():
