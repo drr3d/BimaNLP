@@ -1,3 +1,4 @@
+# -*- coding: cp1252 -*-
 from langutil.tokenizer import tokenize
 from langutil.stemmer import ChaosStemmer
 from langmodel.modeler.markov import NGramModels
@@ -45,6 +46,11 @@ def stemm(toksen):
         print "Filtered guess word adalah:", morph.getFilteredGuessWord(),"\n"
 
 def NGramLangModel():
+    cl = Loader('C:\\BimaNLP\\dataset\\')
+    f = cl.loadLarge('tb_kota_bywiki.txt',lazy_load=True)
+    w = cl.processRaw(f)
+    r = cl.rawForLangmodel(w)
+                           
     dataset=[['saya','suka','kamu'],
          ['kamu','suka','saya'],
          ['saya','tidak','suka','jika','kamu','pergi','dengan','dia']

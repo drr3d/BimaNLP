@@ -22,3 +22,8 @@
 ######## 2015-11-05 ########
 	> ngram.py: menon-aktifkan repetion checker ketika memasukkan sample, karena berpotensi
 			menjadi bug dalam proses N-Gram Language Model
+			
+######## 2015-11-07 ########
+	> markov.py : membuat subroutine scale() pada routine constructVocab()
+					=> supaya penggunaan jump parameter tidak mempengaruhi jumlah dari keseluruhan kata, 
+						hanya akan mempengaruhi frekuensi sample
