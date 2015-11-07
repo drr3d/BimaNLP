@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+import operator
+import functools
+from numpy import log, log2, asarray, float64
 from os import sys, path
 
 if __package__ is None:
@@ -46,7 +49,7 @@ def constructVocab(vect, totalword, nforgram, separate=True, njump=0):
     
     if totalword==0:
         # self.total_word = N = Jumlah(C) seluruh kata/sample pada kalimat/ruang sample
-        total_word = sum(freqDist.values())
+        total_word = functools.reduce(operator.add, freqDist.values())#sum(freqDist.values())
 
     if jumpdataset:
         scale(jumpdataset)
@@ -58,6 +61,9 @@ class NGramModels:
     """
     Secara default NgramModel akan membentuk Bigram, karena Unigram dipertimbangkan terlalu noise
         kenapa terlalu banyak noise? karena unigram tidak menggunakan data histori
+
+        A unigram model (or 1-gram model) conditions the probability of a word on no other words,
+            and just reflects the frequency of words context.-- Chen-Goodman --
     """
     vocab={}
     finalmodel={}
@@ -66,7 +72,43 @@ class NGramModels:
     
     def __init__(self, ngram=2):
         self.nforgram = ngram
+
+    def perplexity(self, models):
+        # https://en.wikipedia.org/wiki/Binary_logarithm
+        # https://en.wikipedia.org/wiki/Perplexity
+        # Speech and Language Processing, jurafsky - Martin, (page 221-223)
+        """
+            minimizing perplexity is the same as maximizing probability.
+            The smaller the perplexity, the better the language model is at modeling unseen data.
+        """
+        self.perplexity={}
+
+        def entropy(n, N, logprobs):
+            # https://en.wikipedia.org/wiki/Entropy_(information_theory)
+            """
+                b in Log-b is the base of the logarithm used. Common values of b are 2, Euler's number e, and 10,
+                and the unit of entropy is shannon for b = 2, nat for b = e, and hartley for b = 10.
+                When b = 2, the units of entropy are also commonly referred to as bits.
+            """
+            # Disini kita menggunakan b = e = 1, jadi entropy yang dihasilkan disebut nat
+            self.logprob = functools.reduce(operator.add, logprobs)
+            prob = n/N
+            return (prob * self.logprob)
         
+        for k,v in models.items():
+            seq=[]
+            
+            for ke, va in v.items():
+                seq.append(va.estimator)
+            
+            seq = asarray(seq, dtype=float64)
+            N=float(len(models[k])) # Size of Vocabulary
+
+            self.perplexity[k]=2**entropy(-1.,N,seq)
+            
+            del seq
+        
+  
     def MLE(self,n,N,ls=False,V=0):
         """ Estimasi nilai Probabilitas suatu Kata """
         ### Bisa dibilang juga, ini adalah proses training NGram LM dengan metoda MLE ###
@@ -85,9 +127,15 @@ class NGramModels:
         n = n+1 if ls else n
         N = N+V if ls else N
 
-        return round(float(n)/float(N),4)
+        ###################################### 2015-11-07 #########################################
+        ## Simpan probabilitas dalam log() format, untuk mencegah numerical computation error
+        ##      ketika berhadapan dengan probabilitas yang sangat rendah
+        ## Kenapa menggunakan log base e? bukan base 2?
+        ## lihat penjelasannya di subroutine entropy() pada routine perplexity()
+        ###########################################################################################
+        return log(float(n)/float(N)) #<= log-probabilities
 
-    def train(self,vect,smooth=None,separate=True):
+    def train(self,vect,smooth=None,separate=True,njump=0):
         """
         In the study of probability, given at least two random variables X, Y, ...,that are defined on a probability space S,       
         the joint probability distribution for X, Y, ... is a probability distribution
@@ -104,7 +152,8 @@ class NGramModels:
         for i in range(1,self.nforgram+1):            
             self.nforgram=i
             self.raw_vocab,self.total_word = constructVocab(vect, self.total_word, \
-                                                            nforgram=self.nforgram, separate=separate)
+                                                            nforgram=self.nforgram, separate=separate, \
+                                                            njump=njump)
 
             for k, v in self.raw_vocab.iteritems():
                 # Hitung:
@@ -148,5 +197,6 @@ class NGramModels:
             self.finalmodel[i]=self.vocab                
             self.vocab={}
             del self.raw_vocab
-        
+
+        self.perplexity(self.finalmodel)
         return self.finalmodel

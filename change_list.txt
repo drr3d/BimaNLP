@@ -27,3 +27,6 @@
 	> markov.py : membuat subroutine scale() pada routine constructVocab()
 					=> supaya penggunaan jump parameter tidak mempengaruhi jumlah dari keseluruhan kata, 
 						hanya akan mempengaruhi frekuensi sample
+						
+				  membuat routine perplexity()
+					=> digunakan untuk evaluasi sebuah language model

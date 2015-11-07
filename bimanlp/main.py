@@ -1,4 +1,3 @@
-# -*- coding: cp1252 -*-
 from langutil.tokenizer import tokenize
 from langutil.stemmer import ChaosStemmer
 from langmodel.modeler.markov import NGramModels
@@ -59,6 +58,8 @@ def NGramLangModel():
     lms = NGramModels()
     models = lms.train(dataset,smooth='',separate=True)
 
+    print "perplexity dari language model: ", lms.perplexity
+
     print "\n##########################################################"    
     for k, v in models.iteritems():
         print k
@@ -67,7 +68,8 @@ def NGramLangModel():
             #est+=val.estimator
             print key,val
         print "\n"#,est
-        
+
+    
 if __name__ == "__main__":
     kata1 = 'memakan nasi goreng dipinggir empang, memang !! sungguh  nikmat sekali.'
     kata2 = 'penghasilannya hanya cukup untuk memenuhi keseluruhan kebutuhan kedua buah hati kesayangannya'
