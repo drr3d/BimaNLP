@@ -13,12 +13,6 @@ BimaNLP:
 3. [NLTK 2.0](http://www.nltk.org/)
 4. [NumPy v1.9](http://www.numpy.org/)
 
-DataAgent:
-
-1. [Beautiful Soup](http://www.crummy.com/software/BeautifulSoup/#Download)
-2. [Tweepy](http://www.tweepy.org/)
-3. [Bottle](http://bottlepy.org/docs/dev/index.html)
-
 ## License
 [GNU General Public License (GPL) 2.0](http://www.gnu.org/licenses/gpl-2.0.html)
 

@@ -39,14 +39,20 @@ def ngrams(tok_sentence,n=1,njump=0):
                             # Untuk mendapat model yang lebih bervariasi, 
                             # kita tambahkan njump parameter
                             if z+n_gram-1+njump< len(kata):
-                                #if kata[z+x+njump] not in ngram:
-                                    # Cegah sample yang berulang pada kumpulan sample
-                                 ngram.append(kata[z+x+njump])
+                                 if kata[z+x+njump]=='<s>':
+                                    ngram.append(kata[z+x+njump+1])
+                                 else:
+                                    ngram.append(kata[z+x+njump])
                             else:
-                                #if kata[0] not in ngram:
-                                 ngram.append(kata[0])
+                                 """
+                                    Dirasa masih dibutuhkan modifikasi lagi untuk memaksimalkan
+                                    sample ketika penerapan jump parameter digunakan
+                                 """
+                                 if kata[0]=='<s>':
+                                    ngram.append(kata[z+x])
+                                 else:
+                                    ngram.append(kata[z+x])
                         else:
-                            #if kata[z+x] not in ngram:
                             ngram.append(kata[z+x])
 
                     # Ada beberapa kasus ketika kita menerapkan jump parameter (biasanya jika jump param cukup besar)

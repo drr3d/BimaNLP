@@ -55,19 +55,21 @@ def NGramLangModel():
          ['saya','tidak','suka','jika','kamu','pergi','dengan','dia']
          ]
 
-    lms = NGramModels()
-    models = lms.train(dataset,smooth='',separate=True)
+    lms = NGramModels(ngram=3)
+    models = lms.train(r,smooth='',separate=True,njump=1)
 
-    print "perplexity dari language model: ", lms.perplexity
+    print "\nperplexity dari language model: \n",
+    print "unigram \t bigram \t trigram \n",
+    print '\t '.join(["%0.5f" % v for k, v in lms.perplexity.items()])
 
-    print "\n##########################################################"    
-    for k, v in models.iteritems():
-        print k
+    #print "\n##########################################################"    
+    #for k, v in models.iteritems():
+    #    print k
         #est=0
-        for key,val in v.iteritems():
+    #    for key,val in v.iteritems():
             #est+=val.estimator
-            print key,val
-        print "\n"#,est
+    #        print key,val
+    #    print "\n"#,est
 
     
 if __name__ == "__main__":

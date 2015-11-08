@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import operator
 import functools
-from numpy import log, log2, asarray, float64
+from numpy import log, log2, asarray, float64, exp
 from os import sys, path
 
 if __package__ is None:
@@ -63,7 +63,8 @@ class NGramModels:
         kenapa terlalu banyak noise? karena unigram tidak menggunakan data histori
 
         A unigram model (or 1-gram model) conditions the probability of a word on no other words,
-            and just reflects the frequency of words context.-- Chen-Goodman --
+            and just re
+ects the frequency of words intext.-- Chen-Goodman --
     """
     vocab={}
     finalmodel={}
@@ -130,8 +131,6 @@ class NGramModels:
         ###################################### 2015-11-07 #########################################
         ## Simpan probabilitas dalam log() format, untuk mencegah numerical computation error
         ##      ketika berhadapan dengan probabilitas yang sangat rendah
-        ## Kenapa menggunakan log base e? bukan base 2?
-        ## lihat penjelasannya di subroutine entropy() pada routine perplexity()
         ###########################################################################################
         return log(float(n)/float(N)) #<= log-probabilities
 
