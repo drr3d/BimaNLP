@@ -1,3 +1,4 @@
+from numpy import exp
 from langutil.tokenizer import tokenize
 from langutil.stemmer import ChaosStemmer
 from langmodel.modeler.markov import NGramModels
@@ -46,7 +47,7 @@ def stemm(toksen):
 
 def NGramLangModel():
     cl = Loader('C:\\BimaNLP\\dataset\\')
-    f = cl.loadLarge('tb_kota_bywiki.txt',lazy_load=True)
+    f = cl.loadLarge('tb_kota_bywiki.txt',lazy_load=True)#tb_berita_onlinemedia, tb_kota_bywiki
     w = cl.processRaw(f)
     r = cl.rawForLangmodel(w)
                            
@@ -56,20 +57,24 @@ def NGramLangModel():
          ]
 
     lms = NGramModels(ngram=3)
-    models = lms.train(r,smooth='',separate=True,njump=1)
-
+    models = lms.train(dataset,optimizer='sgt',separate=True,njump=0)
     print "\nperplexity dari language model: \n",
     print "unigram \t bigram \t trigram \n",
     print '\t '.join(["%0.5f" % v for k, v in lms.perplexity.items()])
 
-    #print "\n##########################################################"    
-    #for k, v in models.iteritems():
-    #    print k
-        #est=0
-    #    for key,val in v.iteritems():
-            #est+=val.estimator
-    #        print key,val
-    #    print "\n"#,est
+    print "\n##########################################################"
+    #seq=[]
+    #est=0
+    print "token \t count \t proba \n",
+    for k, v in models.iteritems():
+        print k, " - Gram"
+        for key,val in v.iteritems():
+    #        if k==1:
+            print ("%s\t %d\t %0.5f"%(key,val.count,exp(val.estimator)))
+    #        est+=exp(val.estimator)#np.exp(val.estimator)
+    #            seq.append(val.estimator)
+    #    print est,"\n"
+    #    print est
 
     
 if __name__ == "__main__":

@@ -56,7 +56,26 @@ class Loader:
         else:
             return self.readInChunks(f)
 
-    def rawForLangmodel(self,f,punct_remove=False):
+    def rawForVector(self, f, min_word=2):
+        """ Word level vector """
+        tok = tokenize()
+        t0 = time()
+        #print "Splitting sentence for vector processing..."
+        table = string.maketrans("","")
+        
+        words = re.split(r''+pattern[0]+'',f)
+        words = [z.translate(table, string.punctuation) for z in words]
+        words = filter(lambda x: len(tok.WordTokenize(x)) >= min_word, words)
+        words = [tok.WordTokenize(z) for z in words]
+        
+        #print "total sentence for process: ", len(words)
+        #print "total unique words(vocabulary): ", len(self.word_constructor(words))
+        #print("Splitting sentence for vector done in %fs" % (time() - t0))
+        #print "\n"
+        
+        return words
+    
+    def rawForLangmodel(self,f,punct_remove=False,to_token=True):
         tok = tokenize()
         table = string.maketrans("","")
 
@@ -65,7 +84,8 @@ class Loader:
         words = re.split(r''+pattern[0]+'',f)
         
         if punct_remove: words = [z.translate(table, string.punctuation) for z in words]
-        
-        words = [tok.WordTokenize(z) for z in words]
+
+        if to_token:
+            words = [tok.WordTokenize(z) for z in words]
         return words
 

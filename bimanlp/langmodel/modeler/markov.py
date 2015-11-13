@@ -8,10 +8,14 @@ if __package__ is None:
     sys.path.append("C:\\BimaNLP\\bimanlp")
     from langmodel.vocab import SimpleVocab
     from langmodel import ngram
+    from langmodel.optimizer.sgt import SimpleGoodTuring
+    
     from langutil.tokenizer import tokenize
 else:
     from langmodel.vocab import SimpleVocab
     from langmodel import ngram
+    from langmodel.optimizer.sgt import SimpleGoodTuring
+    
     from langutil.tokenizer import tokenize
 
 def constructVocab(vect, totalword, nforgram, separate=True, njump=0):
@@ -42,7 +46,7 @@ def constructVocab(vect, totalword, nforgram, separate=True, njump=0):
             if '<s>' not in z: z.insert(0,'<s>')
             if '</s>' not in z: z.insert(len(z),'</s>')
         dataset.append(ngram.ngrams(z,n=nforgram))
-        if njump>0:
+        if njump>0 and nforgram>1:
            jumpdataset.append(ngram.ngrams(z,n=nforgram,njump=njump)) 
 
     scale(dataset)
@@ -63,8 +67,7 @@ class NGramModels:
         kenapa terlalu banyak noise? karena unigram tidak menggunakan data histori
 
         A unigram model (or 1-gram model) conditions the probability of a word on no other words,
-            and just re
-ects the frequency of words intext.-- Chen-Goodman --
+            and just reflects the frequency of words context.-- Chen-Goodman --
     """
     vocab={}
     finalmodel={}
@@ -75,6 +78,11 @@ ects the frequency of words intext.-- Chen-Goodman --
         self.nforgram = ngram
 
     def perplexity(self, models):
+        """
+            dalam memberikan hasil evaluasi suatu LM, perplexity sebetulnya kurang bagus,
+            karena memberikan approximation yang jelek, terkecuali jika:
+                > test data sama persis dengan train data
+        """
         # https://en.wikipedia.org/wiki/Binary_logarithm
         # https://en.wikipedia.org/wiki/Perplexity
         # Speech and Language Processing, jurafsky - Martin, (page 221-223)
@@ -134,7 +142,7 @@ ects the frequency of words intext.-- Chen-Goodman --
         ###########################################################################################
         return log(float(n)/float(N)) #<= log-probabilities
 
-    def train(self,vect,smooth=None,separate=True,njump=0):
+    def train(self,vect,optimizer=None,separate=True,njump=0):
         """
         In the study of probability, given at least two random variables X, Y, ...,that are defined on a probability space S,       
         the joint probability distribution for X, Y, ... is a probability distribution
@@ -153,16 +161,22 @@ ects the frequency of words intext.-- Chen-Goodman --
             self.raw_vocab,self.total_word = constructVocab(vect, self.total_word, \
                                                             nforgram=self.nforgram, separate=separate, \
                                                             njump=njump)
-
+            if optimizer=='sgt':
+                sgtN= float(functools.reduce(operator.add,self.raw_vocab.values()))
+                sgt = SimpleGoodTuring(self.raw_vocab, sgtN)
+                sgtSmoothProb,p0 = sgt.train(self.raw_vocab)
+                
             for k, v in self.raw_vocab.iteritems():
                 # Hitung:
                 # P(Wi) = C(Wi) / N <= untuk UniGram <= dicari melalui MLE
                 if i==1:
                     # Unigram do not use history
                     """ WARNING!!! Kalau menggunakan SGT smoothing, MLE tidak digunakan """
-                    if smooth=='ls':
+                    if optimizer=='ls':
                         V=len(self.raw_vocab) #<= gunakan jika menggunakan laplace smoothing
                         self.vocab[k] = SimpleVocab(count=v, estimator=self.MLE(v,self.total_word,ls=True,V=V))
+                    elif optimizer =='sgt':
+                        self.vocab[k] = SimpleVocab(count=v, estimator=sgtSmoothProb[k])
                     else:
                         self.vocab[k] = SimpleVocab(count=v, estimator=self.MLE(v,self.total_word))
                 elif i ==2:
@@ -176,9 +190,12 @@ ects the frequency of words intext.-- Chen-Goodman --
                     # P(Wj | Wi) = P(Wi, Wj) / P(Wi) = C(Wi, Wj) / C(Wi)
                     #       C(Wi)=> adalah unigram count
                     CWi = self.finalmodel[i-1][tok.WordTokenize(k)[0]].count
-                    if smooth=='ls':
+                    if optimizer=='ls':
+                        #functools.reduce(operator.add,self.raw_vocab.values())
                         V=len(self.raw_vocab) #<= gunakan jika menggunakan laplace smoothing
                         self.vocab[k] = SimpleVocab(count=v, estimator=self.MLE(v,CWi,ls=True,V=V))
+                    elif optimizer =='sgt':
+                        self.vocab[k] = SimpleVocab(count=v, estimator=sgtSmoothProb[k])
                     else:
                         self.vocab[k] = SimpleVocab(count=v, estimator=self.MLE(v,CWi))
                 elif i ==3:
@@ -187,9 +204,11 @@ ects the frequency of words intext.-- Chen-Goodman --
                     #   tetapi yang perlu kita cari adalah P(Wk | Wi, Wj) == conditional distribution untuk
                     #       seberapa kemungkinan kata Wk muncul diberikan kata Wi,Wj sebelumnya
                     CWi = self.finalmodel[i-1][' '.join(tok.WordTokenize(k)[:-1])].count
-                    if smooth=='ls':
+                    if optimizer=='ls':
                         V=len(self.raw_vocab) #<= gunakan jika menggunakan laplace smoothing
                         self.vocab[k] = SimpleVocab(count=v, estimator=self.MLE(v,CWi,ls=True,V=V))
+                    elif optimizer =='sgt':
+                        self.vocab[k] = SimpleVocab(count=v, estimator=sgtSmoothProb[k])
                     else:
                         self.vocab[k] = SimpleVocab(count=v, estimator=self.MLE(v,CWi))
 

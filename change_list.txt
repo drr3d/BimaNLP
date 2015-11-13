@@ -30,3 +30,6 @@
 						
 				  membuat routine perplexity()
 					=> digunakan untuk evaluasi sebuah language model
+					
+######## 2015-11-13 ########
+	> sgt.py : module untuk optimizer language model dengan metoda simple Good-Turing
