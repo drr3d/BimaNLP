@@ -1,4 +1,10 @@
 # -*- coding: utf-8 -*-
+"""
+Main References:
+Good-Turing Frequency Estimation Without Tears*
+    The paper "Good–Turing frequency estimation without tears" is scanned from pp. 217–37 of the
+    Journal of Quantitative Linguistics, vol. 2, 1995.
+"""
 import math
 
 from scipy import stats
@@ -134,17 +140,6 @@ class SimpleGoodTuring():
         return exp(slope * log(i)+ intercept)
 
     def sgtZ(self):
-        """
-        Enter values in the Z column as follows:
-            :> For each row j, let i and k be the values in the r column
-                for the immediately previous and immediately following rows
-                respectively(so that k > i).
-
-            :> if j is the first row, let i = 0;
-               if j is the last row let k = 2j-i
-
-            :> Set Zj = 2 Nj/(k-i)
-        """
         Z={}
         # http://stackoverflow.com/questions/9001509/how-can-i-sort-a-dictionary-by-key
         """ Based on following work in Church and Gale[1991],

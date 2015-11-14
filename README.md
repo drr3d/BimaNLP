@@ -12,6 +12,7 @@ BimaNLP:
 2. [Sklearn v0.16.0](http://scikit-learn.org/stable/)
 3. [NLTK 2.0](http://www.nltk.org/)
 4. [NumPy v1.9](http://www.numpy.org/)
+5. [SciPy](http://www.scipy.org/)
 
 ## License
 [GNU General Public License (GPL) 2.0](http://www.gnu.org/licenses/gpl-2.0.html)
