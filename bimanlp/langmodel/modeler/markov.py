@@ -9,12 +9,14 @@ if __package__ is None:
     from langmodel.vocab import SimpleVocab
     from langmodel import ngram
     from langmodel.optimizer.sgt import SimpleGoodTuring
+    from langmodel.optimizer.mkney import ModifiedKnesserNey
     
     from langutil.tokenizer import tokenize
 else:
     from langmodel.vocab import SimpleVocab
     from langmodel import ngram
     from langmodel.optimizer.sgt import SimpleGoodTuring
+    from langmodel.optimizer.mkney import ModifiedKnesserNey
     
     from langutil.tokenizer import tokenize
 
@@ -77,7 +79,7 @@ class NGramModels:
     def __init__(self, ngram=2):
         self.nforgram = ngram
 
-    def perplexity(self, models):
+    def perplexity(self, models, verbose=False):
         """
             dalam memberikan hasil evaluasi suatu LM, perplexity sebetulnya kurang bagus,
             karena memberikan approximation yang jelek, terkecuali jika:
@@ -90,7 +92,7 @@ class NGramModels:
             minimizing perplexity is the same as maximizing probability.
             The smaller the perplexity, the better the language model is at modeling unseen data.
         """
-        self.perplexity={}
+        perplexity={}
 
         def entropy(n, N, logprobs):
             # https://en.wikipedia.org/wiki/Entropy_(information_theory)
@@ -113,12 +115,17 @@ class NGramModels:
             seq = asarray(seq, dtype=float64)
             N=float(len(models[k])) # Size of Vocabulary
 
-            self.perplexity[k]=2**entropy(-1.,N,seq)
+            perplexity[k]=2**entropy(-1.,N,seq)
             
             del seq
+
+        if verbose:
+            print "\nperplexity dari language model: \n",
+            print "unigram \t bigram \t trigram \n",
+            print '\t '.join(["%0.5f" % v for k, v in perplexity.items()]),"\n"
         
   
-    def MLE(self,n,N,ls=False,V=0):
+    def MLE(self, n, N, ls=False, V=0):
         """ Estimasi nilai Probabilitas suatu Kata """
         ### Bisa dibilang juga, ini adalah proses training NGram LM dengan metoda MLE ###
         
@@ -142,7 +149,7 @@ class NGramModels:
         ###########################################################################################
         return log(float(n)/float(N)) #<= log-probabilities
 
-    def train(self,vect,optimizer=None,separate=True,njump=0):
+    def train(self, vect, optimizer=None, separate=True, njump=0, verbose=False):
         """
         In the study of probability, given at least two random variables X, Y, ...,that are defined on a probability space S,       
         the joint probability distribution for X, Y, ... is a probability distribution
@@ -155,66 +162,98 @@ class NGramModels:
         berarti p(w1,w2,...,wn) disebut sebagai distribusi probabilitas(dimana w1,w2,...wn sebagai random variables), 
             kata (w1,w2,...,wn), over the kalimat S
         """
-        tok = tokenize()
-        for i in range(1,self.nforgram+1):            
-            self.nforgram=i
-            self.raw_vocab,self.total_word = constructVocab(vect, self.total_word, \
-                                                            nforgram=self.nforgram, separate=separate, \
-                                                            njump=njump)
-            if optimizer=='sgt':
-                sgtN= float(functools.reduce(operator.add,self.raw_vocab.values()))
-                sgt = SimpleGoodTuring(self.raw_vocab, sgtN)
-                sgtSmoothProb,p0 = sgt.train(self.raw_vocab)
-                
-            for k, v in self.raw_vocab.iteritems():
-                # Hitung:
-                # P(Wi) = C(Wi) / N <= untuk UniGram <= dicari melalui MLE
-                if i==1:
-                    # Unigram do not use history
-                    """ WARNING!!! Kalau menggunakan SGT smoothing, MLE tidak digunakan """
-                    if optimizer=='ls':
-                        V=len(self.raw_vocab) #<= gunakan jika menggunakan laplace smoothing
-                        self.vocab[k] = SimpleVocab(count=v, estimator=self.MLE(v,self.total_word,ls=True,V=V))
-                    elif optimizer =='sgt':
-                        self.vocab[k] = SimpleVocab(count=v, estimator=sgtSmoothProb[k])
-                    else:
-                        self.vocab[k] = SimpleVocab(count=v, estimator=self.MLE(v,self.total_word))
-                elif i ==2:
-                    """
-                    Perlu diingat motivasi dibalik NGram LM adalah:
-                    begin with the task of computing P(w|h), the probability of a word w given some history h
-                    """
-                    # P(Wi, Wj) = C(Wi, Wj) / N <= untuk BiGram <= dicari melalui MLE
-                    #   tetapi yang perlu kita cari adalah P(Wj | Wi) == conditional distribution untuk
-                    #       seberapa kemungkinan kata Wj muncul diberikan kata Wi sebelumnya
-                    # P(Wj | Wi) = P(Wi, Wj) / P(Wi) = C(Wi, Wj) / C(Wi)
-                    #       C(Wi)=> adalah unigram count
-                    CWi = self.finalmodel[i-1][tok.WordTokenize(k)[0]].count
-                    if optimizer=='ls':
-                        #functools.reduce(operator.add,self.raw_vocab.values())
-                        V=len(self.raw_vocab) #<= gunakan jika menggunakan laplace smoothing
-                        self.vocab[k] = SimpleVocab(count=v, estimator=self.MLE(v,CWi,ls=True,V=V))
-                    elif optimizer =='sgt':
-                        self.vocab[k] = SimpleVocab(count=v, estimator=sgtSmoothProb[k])
-                    else:
-                        self.vocab[k] = SimpleVocab(count=v, estimator=self.MLE(v,CWi))
-                elif i ==3:
-                    #######################################################################################
-                    # P(Wi, Wj, Wk) = C (Wi, Wj, Wk) / N <= untuk Trigram
-                    #   tetapi yang perlu kita cari adalah P(Wk | Wi, Wj) == conditional distribution untuk
-                    #       seberapa kemungkinan kata Wk muncul diberikan kata Wi,Wj sebelumnya
-                    CWi = self.finalmodel[i-1][' '.join(tok.WordTokenize(k)[:-1])].count
-                    if optimizer=='ls':
-                        V=len(self.raw_vocab) #<= gunakan jika menggunakan laplace smoothing
-                        self.vocab[k] = SimpleVocab(count=v, estimator=self.MLE(v,CWi,ls=True,V=V))
-                    elif optimizer =='sgt':
-                        self.vocab[k] = SimpleVocab(count=v, estimator=sgtSmoothProb[k])
-                    else:
-                        self.vocab[k] = SimpleVocab(count=v, estimator=self.MLE(v,CWi))
+        if optimizer=='modkn':
+            """NOTE:
+                Untuk sementara penerapan njump parameter belum dapat digunakan
+                dalam pengimplementasian Modified Knesser-Ney optimizer ini.
+            """
+            modkn = ModifiedKnesserNey()
+            modkn.kneser_ney_discounting(vect)
+            modkn.train()
+            #print "proba\t\ttoken\t\tbow\t\tcount"
+            tmpN=1
+            for k,v in sorted(modkn.mKNeyEstimate.items(),key=lambda x: x[1][3]):
+                #print ("%0.7f\t%s\t\t%0.7f\t\t%d"%(exp(v[0]),k,exp(v[1]),v[2]))
+                if len(k.split(' ')) != tmpN:
+                    self.finalmodel[tmpN]=self.vocab
+                    self.vocab={}
+                    tmpN = len(k.split(' '))
 
-            self.finalmodel[i]=self.vocab                
-            self.vocab={}
-            del self.raw_vocab
+                self.vocab[k] = SimpleVocab(count=int(v[2]), estimator=v[0])
 
-        self.perplexity(self.finalmodel)
+            self.finalmodel[tmpN]=self.vocab
+            del self.vocab
+
+        else:
+            tok = tokenize()
+            for i in range(1,self.nforgram+1):            
+                self.nforgram=i
+                self.raw_vocab,self.total_word = constructVocab(vect, self.total_word, \
+                                                                nforgram=self.nforgram, separate=separate, \
+                                                                njump=njump)
+                if optimizer=='sgt':
+                    sgtN= float(functools.reduce(operator.add,self.raw_vocab.values()))
+                    sgt = SimpleGoodTuring(self.raw_vocab, sgtN)
+                    sgtSmoothProb,p0 = sgt.train(self.raw_vocab)
+                    
+                for k, v in self.raw_vocab.iteritems():
+                    # Hitung:
+                    # P(Wi) = C(Wi) / N <= untuk UniGram <= dicari melalui MLE
+                    if i==1:
+                        # Unigram do not use history
+                        """ WARNING!!! Kalau menggunakan SGT smoothing, MLE tidak digunakan """
+                        if optimizer=='ls':
+                            V=len(self.raw_vocab) #<= gunakan jika menggunakan laplace smoothing
+                            self.vocab[k] = SimpleVocab(count=v, estimator=self.MLE(v,self.total_word,ls=True,V=V))
+                        elif optimizer =='sgt':
+                            self.vocab[k] = SimpleVocab(count=v, estimator=sgtSmoothProb[k])
+                        else:
+                            self.vocab[k] = SimpleVocab(count=v, estimator=self.MLE(v,self.total_word))
+                    elif i ==2:
+                        """
+                        Perlu diingat motivasi dibalik NGram LM adalah:
+                        begin with the task of computing P(w|h), the probability of a word w given some history h
+                        """
+                        # P(Wi, Wj) = C(Wi, Wj) / N <= untuk BiGram <= dicari melalui MLE
+                        #   tetapi yang perlu kita cari adalah P(Wj | Wi) == conditional distribution untuk
+                        #       seberapa kemungkinan kata Wj muncul diberikan kata Wi sebelumnya
+                        # P(Wj | Wi) = P(Wi, Wj) / P(Wi) = C(Wi, Wj) / C(Wi)
+                        #       C(Wi)=> adalah unigram count
+                        CWi = self.finalmodel[i-1][tok.WordTokenize(k)[0]].count
+                        if optimizer=='ls':
+                            #functools.reduce(operator.add,self.raw_vocab.values())
+                            V=len(self.raw_vocab) #<= gunakan jika menggunakan laplace smoothing
+                            self.vocab[k] = SimpleVocab(count=v, estimator=self.MLE(v,CWi,ls=True,V=V))
+                        elif optimizer =='sgt':
+                            self.vocab[k] = SimpleVocab(count=v, estimator=sgtSmoothProb[k])
+                        else:
+                            self.vocab[k] = SimpleVocab(count=v, estimator=self.MLE(v,CWi))
+                    elif i ==3:
+                        #######################################################################################
+                        # P(Wi, Wj, Wk) = C (Wi, Wj, Wk) / N <= untuk Trigram
+                        #   tetapi yang perlu kita cari adalah P(Wk | Wi, Wj) == conditional distribution untuk
+                        #       seberapa kemungkinan kata Wk muncul diberikan kata Wi,Wj sebelumnya
+                        CWi = self.finalmodel[i-1][' '.join(tok.WordTokenize(k)[:-1])].count
+                        if optimizer=='ls':
+                            V=len(self.raw_vocab) #<= gunakan jika menggunakan laplace smoothing
+                            self.vocab[k] = SimpleVocab(count=v, estimator=self.MLE(v,CWi,ls=True,V=V))
+                        elif optimizer =='sgt':
+                            self.vocab[k] = SimpleVocab(count=v, estimator=sgtSmoothProb[k])
+                        else:
+                            self.vocab[k] = SimpleVocab(count=v, estimator=self.MLE(v,CWi))
+
+                self.finalmodel[i]=self.vocab                
+                self.vocab={}
+                del self.raw_vocab
+
+        self.perplexity(self.finalmodel, verbose=verbose)
+        if verbose:
+            print "token \t count \t proba \n",
+            for k, v in self.finalmodel.iteritems():
+                print "######################################################################"
+                print k, " - Gram", "\n",
+                print "######################################################################"
+                for ke,va in v.iteritems():
+                    print ("%s\t %d\t %0.5f"%(ke,va.count,exp(val.estimator)))
+                    
         return self.finalmodel

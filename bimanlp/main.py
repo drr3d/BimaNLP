@@ -1,4 +1,5 @@
 from numpy import exp
+
 from langutil.tokenizer import tokenize
 from langutil.stemmer import ChaosStemmer
 from langmodel.modeler.markov import NGramModels
@@ -44,37 +45,25 @@ def stemm(toksen):
         #print "Detected Affix is: ", morph.getFoundSuffix(),"\n"
         print "Root kata untuk kata: ", z ," -> adalah: ", morph.getRootWord()
         print "Filtered guess word adalah:", morph.getFilteredGuessWord(),"\n"
-
+    
 def NGramLangModel():
     cl = Loader('C:\\BimaNLP\\dataset\\')
-    f = cl.loadLarge('tb_berita_onlinemedia.txt',lazy_load=True)#tb_berita_onlinemedia, tb_kota_bywiki
-    w = cl.processRaw(f)
-    r = cl.rawForLangmodel(w)
+    f = cl.loadLarge('tb_kota_bywiki.txt',lazy_load=True)#tb_berita_onlinemedia, tb_kota_bywiki
+    w = cl.processRaw(f,to_lower=True)
+    r = cl.rawForLangmodel(w,punct_remove=True,to_token=True)
                            
     dataset=[['saya','suka','kamu'],
          ['kamu','suka','saya'],
          ['saya','tidak','suka','jika','kamu','pergi','dengan','dia']
-         ]    
-    lms = NGramModels(ngram=3)
-    models = lms.train(dataset,optimizer='sgt',separate=True,njump=0)
-    print "\nperplexity dari language model: \n",
-    print "unigram \t bigram \t trigram \n",
-    print '\t '.join(["%0.5f" % v for k, v in lms.perplexity.items()])
+         ]
 
-    print "\n##########################################################"
-    #seq=[]
-    #est=0
-    print "token \t count \t proba \n",
-    for k, v in models.iteritems():
-        print k, " - Gram"
-        for key,val in v.iteritems():
-    #        if k==:
-                print ("%s\t %d\t %0.5f"%(key,val.count,exp(val.estimator)))
-    #        est+=exp(val.estimator)#np.exp(val.estimator)
-    #            seq.append(val.estimator)
-    #    print est,"\n"
-    #    print est
-    #print lms.finalmodel[3]
+    
+    lms = NGramModels(ngram=2)
+    # njump parameter belum bisa digunakan untuk modkn optimizer
+    models = lms.train(r, optimizer='modkn',\
+                       separate=False, njump=0, verbose=False)
+
+    print "##########################################################"
     
 if __name__ == "__main__":
     kata1 = 'memakan nasi goreng dipinggir empang, memang !! sungguh  nikmat sekali.'

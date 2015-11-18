@@ -134,7 +134,7 @@ adakalanya/Prep
 adakan/Prep
 adaks/N
 adaktil/Adj
-adalah/Vintr
+adalah/V
 adalat/N
 adam/N
 adang/N

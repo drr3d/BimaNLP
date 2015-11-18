@@ -23,10 +23,12 @@ class Loader:
     def __init__(self, langFolder):
         self.languageDBFolder = self.languageDBFolder + langFolder
    
-    def processRaw(self, f, clear_newline = True, clear_dblspace = True):
+    def processRaw(self, f, clear_newline = True, clear_dblspace = True, to_lower=False):
         t0 = time()
         print("Processing raw text...")
         words = ''.join(f)
+        if to_lower:
+            words = words.lower()
         words = re.sub(r'[^\x00-\x7F]+','',words).strip()
         if clear_newline: words = re.sub(r'\r\n',' ',words).strip()
         if clear_dblspace: words = re.sub(r'\s\s+',' ',words).strip()
@@ -75,7 +77,7 @@ class Loader:
         
         return words
     
-    def rawForLangmodel(self,f,punct_remove=False,to_token=True):
+    def rawForLangmodel(self, f, punct_remove=False, to_token=True, min_word=2):
         tok = tokenize()
         table = string.maketrans("","")
 
@@ -87,5 +89,8 @@ class Loader:
 
         if to_token:
             words = [tok.WordTokenize(z) for z in words]
+            words = filter(lambda x: len(x) >= min_word, words)
+        else:
+            words = filter(lambda x: len(tok.WordTokenize(x)) >= min_word, words)
         return words
 

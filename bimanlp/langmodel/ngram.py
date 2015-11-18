@@ -5,22 +5,22 @@ if __package__ is None:
 else:
    from utils.errors import NGramErr
 
-def ngrams(tok_sentence,n=1,njump=0):
+def ngrams(toksentence,n=1,njump=0):
     n_gram=n # var berisi jumlah n pada N-Gram, default 1(Uni-Gram)
     n_gram_words=[]
-    kata = tok_sentence # var dengan type list berisi tokenize sentence
+    kata = toksentence # var dengan type list berisi tokenize sentence
     
     try:
-        if type(tok_sentence) != list:
-            raise NGramErr({"message":"Harap masukkan tokenized sentence!!", "tokenize":type(tok_sentence)})
+        if type(toksentence) != list:
+            raise NGramErr({"message":"Harap masukkan tokenized sentence!!", "tokenize":type(toksentence)})
         else:
-            if len(tok_sentence) == 0:
-                raise NGramErr({"message":"Panjang tokenized sentence tidak boleh 0!!", "tokenize":len(tok_sentence)})
+            if len(toksentence) == 0:
+                raise NGramErr({"message":"Panjang tokenized sentence tidak boleh 0!!", "tokenize":len(toksentence)})
 
             if n_gram > len(kata):
                 print "Len N-Gram: %i => Len Sentence: %i"%( n_gram, len(kata))
                 raise NGramErr({"message":"Total N-Gram tidak boleh melebihi Total Kata", \
-                                "tokenize":len(tok_sentence)})
+                                "tokenize":len(toksentence)})
 
     except NGramErr as e:
         print e.args[0]["message"]

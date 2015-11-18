@@ -10,7 +10,7 @@ BimaNLP:
 
 1. Python 2.7
 2. [Sklearn v0.16.0](http://scikit-learn.org/stable/)
-3. [NLTK 2.0](http://www.nltk.org/)
+3. [NLTK 3.0](http://www.nltk.org/)
 4. [NumPy v1.9](http://www.numpy.org/)
 5. [SciPy](http://www.scipy.org/)
 
