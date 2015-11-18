@@ -3,20 +3,21 @@ import operator
 import functools
 from numpy import log, log2, asarray, float64, exp
 from os import sys, path
+from time import time
 
 if __package__ is None:
     sys.path.append("C:\\BimaNLP\\bimanlp")
     from langmodel.vocab import SimpleVocab
     from langmodel import ngram
     from langmodel.optimizer.sgt import SimpleGoodTuring
-    from langmodel.optimizer.mkney import ModifiedKnesserNey
+    from langmodel.optimizer.mkney import ModifiedKneserNey
     
     from langutil.tokenizer import tokenize
 else:
     from langmodel.vocab import SimpleVocab
     from langmodel import ngram
     from langmodel.optimizer.sgt import SimpleGoodTuring
-    from langmodel.optimizer.mkney import ModifiedKnesserNey
+    from langmodel.optimizer.mkney import ModifiedKneserNey
     
     from langutil.tokenizer import tokenize
 
@@ -162,12 +163,16 @@ class NGramModels:
         berarti p(w1,w2,...,wn) disebut sebagai distribusi probabilitas(dimana w1,w2,...wn sebagai random variables), 
             kata (w1,w2,...,wn), over the kalimat S
         """
+        t0 = time()
+        print "Begin training language model..."
+
         if optimizer=='modkn':
             """NOTE:
                 Untuk sementara penerapan njump parameter belum dapat digunakan
-                dalam pengimplementasian Modified Knesser-Ney optimizer ini.
+                dalam pengimplementasian Modified Kneser-Ney optimizer ini.
             """
-            modkn = ModifiedKnesserNey()
+            print "Using optimizer: ", 'Modified Kneser-Ney'
+            modkn = ModifiedKneserNey()
             modkn.kneser_ney_discounting(vect)
             modkn.train()
             #print "proba\t\ttoken\t\tbow\t\tcount"
@@ -185,6 +190,13 @@ class NGramModels:
             del self.vocab
 
         else:
+            if optimizer =='sgt':
+                print "Using optimizer: ", 'Simple Good-Turing'
+            elif optimizer == 'ls':
+                print "Using optimizer: ", 'Laplace'
+            else:
+                print "Using optimizer: ",'Maximum Likelihood Estimation'
+                
             tok = tokenize()
             for i in range(1,self.nforgram+1):            
                 self.nforgram=i
@@ -247,6 +259,7 @@ class NGramModels:
                 del self.raw_vocab
 
         self.perplexity(self.finalmodel, verbose=verbose)
+        print ("Training language model done in %fs" % (time() - t0))
         if verbose:
             print "token \t count \t proba \n",
             for k, v in self.finalmodel.iteritems():

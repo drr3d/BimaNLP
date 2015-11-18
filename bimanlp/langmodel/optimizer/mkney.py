@@ -44,7 +44,7 @@ class NGramStack( ):
         """
         self.s = []
         
-class ModifiedKnesserNey:
+class ModifiedKneserNey:
     def __init__( self, order=3, sb="<s>", se="</s>" ):
         self.sb        = sb
         self.se        = se

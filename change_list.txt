@@ -33,7 +33,3 @@
 					
 ######## 2015-11-13 ########
 	> sgt.py : module untuk optimizer language model dengan metoda simple Good-Turing
-
-
-######## 2015-11-18 ########
-	> modkn.py : module untuk optimizer language model dengan metoda simple Modified Knesser-Ney
