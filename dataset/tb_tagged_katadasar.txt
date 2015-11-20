@@ -30030,7 +30030,7 @@ yakni/Pron
 yakni/Prep
 yakut/N
 yamtuan/N
-yang/Pron
+yang/Prep
 yargon/N
 yasan/N
 yasmin/N

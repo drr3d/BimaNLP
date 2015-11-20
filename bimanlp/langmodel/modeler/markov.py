@@ -267,6 +267,6 @@ class NGramModels:
                 print k, " - Gram", "\n",
                 print "######################################################################"
                 for ke,va in v.iteritems():
-                    print ("%s\t %d\t %0.5f"%(ke,va.count,exp(val.estimator)))
+                    print ("%s\t %d\t %0.5f"%(ke,va.count,exp(va.estimator)))
                     
         return self.finalmodel

@@ -60,7 +60,7 @@ def NGramLangModel():
     lms = NGramModels(ngram=2)
     # njump parameter belum bisa digunakan untuk modkn optimizer
     models = lms.train(dataset, optimizer='modkn',\
-                       separate=False, njump=0, verbose=False)
+                       separate=False, njump=0, verbose=True)
 
     print "##########################################################"
     
@@ -76,5 +76,3 @@ if __name__ == "__main__":
     #NgramModel(kata1.lower())
 
     NGramLangModel()
-
-    #tagging()
