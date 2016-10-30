@@ -55,12 +55,15 @@ No      POS     POS Description                     Example
 35      FW      Foreign Words                       Foreign, word
 ###################################################################################
 """
-import sys
+import sys, re
 import patterns
+
 from nltk.corpus.reader import TaggedCorpusReader
 from nltk.tokenize import RegexpTokenizer
 from nltk.tag import DefaultTagger
 from nltk.tag.sequential import UnigramTagger,BigramTagger,TrigramTagger,RegexpTagger
+
+from langutil.tokenizer import tokenize
 
 class NGramTag():
     def __init__(self, corpusroot, corpusname):
@@ -69,32 +72,39 @@ class NGramTag():
         #gunakan custom wordlist corpus dgn method PlaintextCorpusReader
         #wordlist = PlaintextCorpusReader(corpus_root,'wordlist.txt')
 
-        reader = TaggedCorpusReader(corpusroot, corpusname)
-   
-        self.reader_train = reader.tagged_sents()
-        self.test_sent = reader.tagged_sents()[1000:] 
-        
-    def regexTokenizer(self, sent):
-        ## Text tokenize
-        tok_patterns = r'''(?x)      # set flag to allow verbose regexps
-              ([A-Z])(\.[A-Z])+\.?  # abbreviations, e.g. U.S.A.
-            | \b[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}\b
-            | "(.*?)"   
-            | \w+(-\w+)*            # words with optional internal hyphens
-            | \$?\d+(\.\d+)?%?      # currency and percentages, e.g. $12.40, 82%
-            | \.\.\.                # ellipsis
-            | [][.,;"'?():-_`]      # these are separate tokens
-        '''
-        #([A-Z]\w+){1,} => cari kata yg depannya huruf kapital
+        #nltk_old = [(3,0,1)]
+        #nltk_current = [tuple([int(x) for x in nltk.__version__.split('.')])]
 
-        tokenizer = RegexpTokenizer(tok_patterns)
+        reader = TaggedCorpusReader(corpusroot, corpusname)
+
+        splitratio = 0.8
+   
+        self.reader_train = reader.tagged_sents()[:int(len(reader.tagged_sents())*splitratio)]
+        self.test_sent = reader.tagged_sents()[int(len(reader.tagged_sents())*splitratio):] 
+
+        print "split test ratio: ", int(len(reader.tagged_sents())*splitratio),"\n"
+        print "reader_train len: ", len(self.reader_train)
+        print "test_sent len: ", len(self.test_sent)
+        
+    def regexTokenizer(self, sent, pattern=None):
+        if pattern:
+            tok_pattern = pattern
+        else:
+            tok_pattern = '\w+|\$[\d\.]+|\S+'
+
+        tokenizer = RegexpTokenizer(tok_pattern)
         
         return tokenizer.tokenize(sent)
     
+    def wordTokenizer(self, sent, simple=False):
+        if not simple:
+            tok = tokenize()
+            return tok.WordTokenize(sent)
+        else:
+            return [x.strip() for x in re.split('(\W+)?', text) if x.strip()]
+
     def tag(self, sent, tagregex=True, deftag='XX', verbose=False):
         kalimat = sent.encode('utf-8')
-
-        text = self.regexTokenizer(kalimat.lower().strip())
 
         ## :> --___<<IMPORTANT>>___--
         ##      Untuk beberapa hal default tagger harus dibiarkan 'XX'
@@ -102,9 +112,11 @@ class NGramTag():
         backoff_tagger = DefaultTagger(deftag)
 
         if tagregex:
+           text = self.regexTokenizer(kalimat.lower().strip())
            regexp_tagger = RegexpTagger(patterns.regex_patterns,backoff=backoff_tagger)
            unigram_tagger = UnigramTagger(self.reader_train, backoff=regexp_tagger)
         else:
+           text = self.wordTokenizer(kalimat.lower().strip())
            unigram_tagger = UnigramTagger(self.reader_train, backoff=backoff_tagger)
            
         bigram_tagger = BigramTagger(self.reader_train, backoff=unigram_tagger)
@@ -113,14 +125,14 @@ class NGramTag():
         """
         # Menggunakan dataset pan localization bahasa indonesia "UI-1M-tagged.txt"
         # kombinasi proses tagging diatas menghasilkan tingkat akurasi:
-        #      dengan regextagger: 77%
-        #      tanpa regextagger : > 90%
+        #      dengan regextagger: < 77%
+        #      tanpa regextagger : > 83%
         """
         if verbose:
            # Semakin besar dokumen, semakin lama proses perhitungan akurasi
            # disarankan hanya untuk testing
-           print ("Calculating Tagger Accuracy...")
+           print "Calculating Tagger Accuracy..."
            self.tagAccuracy = trigram_tagger.evaluate(self.test_sent)
-           print ("Accuracy is: %s" % (self.tagAccuracy))
+           print "Accuracy is: %4.2f %%" % (100.0 * self.tagAccuracy)
         
         return trigram_tagger.tag(text)

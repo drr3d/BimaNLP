@@ -28,6 +28,10 @@ from langmodel.modeler.markov import NGramModels
 from utils.loader import Loader
 
 import langmodel.ngram as ngram
+import os
+
+MAIN_DIR = os.path.abspath(os.path.curdir)
+DS_DIR = '/dataset/'
 
 def TextTokenizer(sen):
     # Materi Syntatic proses:text tokenizing
@@ -50,15 +54,12 @@ def NgramModel(sen):
     kata = TextTokenizer(sen)
     kata = ngram.ngrams(kata,n=2,njump=3)
     
-    print "Jumlah sample: ", len(kata)
-    for z in kata:
-        print ' '.join(z)
-    print "\n"
+    print "Total sample: ", len(kata)
 
 def stemm(toksen):
     # Materi Syntatic proses: Text Stemmer bahasa Indonesia dengan Python
     # http://blog.pantaw.com/syntatic-proses-text-stemmer-bahasa-indonesia-dengan-python/
-    morph = ChaosStemmer('C:\\BimaNLP\\dataset\\', 'tb_katadasar.txt')
+    morph = ChaosStemmer(MAIN_DIR+DS_DIR, 'tb_katadasar.txt')
     
     for z in words:
         morph.stemm(z)
@@ -70,10 +71,10 @@ def stemm(toksen):
 
 def chunk(sent):
     # Proses chunking harus selalu didahuli dengan proses tagging text
-    tagger = NGramTag('C:\\BimaNLP\\dataset\\',r'tb_tagged_katadasar.txt')
+    tagger = NGramTag(MAIN_DIR+DS_DIR,r'tb_tagged_katadasar.txt')
     chunk = TagChunker()
 
-    print chunk.treePrint(chunk.tagChunk(tagger.tag(sent)))
+    print chunk.treePrint(chunk.tagChunk(tagger.tag(sent, tagregex=True, verbose=True)))
     #print chunk.tagTokenExtractor(tagger.tag(sent))
     #print chunk.tagChunk(tagger.tag(sent))
     #print chunk.tagTokenizer(chunk.tagChunk(tagger.tag(sent)))
@@ -88,36 +89,26 @@ def chunk(sent):
     print chunk.treeExtractor(chunk.tagChunk(tagger.tag(sent)),lambda t: t.label() == 'PRED')
     
 def NGramLangModel():
-    cl = Loader('C:\\BimaNLP\\dataset\\')
-    f = cl.loadLarge('test_kota.txt',lazy_load=True)#tb_berita_onlinemedia, tb_kota_bywiki
+    cl = Loader(MAIN_DIR+DS_DIR)
+    f = cl.loadLarge('tb_kota_bywiki.txt',lazy_load=True)#tb_berita_onlinemedia, tb_kota_bywiki
     w = cl.processRaw(f,to_lower=True)
     r = cl.rawForLangmodel(w,punct_remove=True,to_token=True)
-                           
-    dataset=[['saya','suka','kamu'],
-         ['kamu','suka','saya'],
-         ['saya','tidak','suka','jika','kamu','pergi','dengan','dia']
-         ]
-
     
     lms = NGramModels(ngram=2)
     # njump parameter belum bisa digunakan untuk modkn optimizer
-    models = lms.train(dataset, optimizer='modkn',\
-                       separate=False, njump=0, verbose=True)
+    models = lms.train(r, optimizer='modkn',\
+                       separate=False, njump=0, verbose=False)
 
     print "##########################################################"
     
 if __name__ == "__main__":
-    kata1 = 'memakan nasi goreng dipinggir empang, memang !! sungguh  nikmat sekali.'
-    kata2 = 'penghasilannya hanya cukup untuk memenuhi keseluruhan kebutuhan kedua buah hati kesayangannya'
-    kata3 = 'ketiga burung kecil itu saling siul-menyiul bersahut-sahutan di pagi hari'
-    kata4 = "harganya"
-    kata5 = "rancangan busana dan aksesori dari perancang muda indonesia ternyata diperhitungkan di tingkat internasional"
+    kata = "rancangan busana dan aksesori dari perancang muda indonesia ternyata diperhitungkan di tingkat internasional"
 
     ## Stemming hanya membutuhkan textTokenize
-    #words = TextTokenizer(kata4.lower())
+    #words = TextTokenizer(kata.lower())
     #stemm(words)
 
-    #NgramModel(kata1.lower())
+    #NgramModel(kata.lower())
     #NGramLangModel()
 
-    chunk(kata5)
+    chunk(kata)

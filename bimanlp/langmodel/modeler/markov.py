@@ -22,7 +22,6 @@ from os import sys, path
 from time import time
 
 if __package__ is None:
-    sys.path.append("C:\\BimaNLP\\bimanlp")
     from langmodel.vocab import SimpleVocab
     from langmodel import ngram
     from langmodel.optimizer.sgt import SimpleGoodTuring
@@ -274,7 +273,7 @@ class NGramModels:
                 self.vocab={}
                 del self.raw_vocab
 
-        self.perplexity(self.finalmodel, verbose=verbose)
+        self.perplexity(self.finalmodel, verbose=True)
         print ("Training language model done in %fs" % (time() - t0))
         if verbose:
             print "token \t count \t proba \n",
