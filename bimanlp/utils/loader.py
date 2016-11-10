@@ -19,19 +19,13 @@ import collections
 
 from time import time
 
-if __package__ is None:
-    from os import sys, path
-    sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-    from langutil.tokenizer import tokenize
-
-else:
-    from langutil.tokenizer import tokenize
+from bimanlp.langutil.tokenizer import tokenize
 
 pattern = ['(?<!\w\.\w.)(?<![A-Z][a-z\.])(?<=\.|\?)\s',
            '(?<=[^A-Z].[.?]) #(?=[A-Z])',
            '\s\s+',
-	   '\n\n+',
-	   '\b([a-zA-Z]+)-[a-z]+']
+       '\n\n+',
+       '\b([a-zA-Z]+)-[a-z]+']
 
 class Loader:
     languageDBFolder =  ''#os.getcwd()#'/libraries/languagedb/'
@@ -78,18 +72,13 @@ class Loader:
         """ Word level vector """
         tok = tokenize()
         t0 = time()
-        #print "Splitting sentence for vector processing..."
+
         table = string.maketrans("","")
         
         words = re.split(r''+pattern[0]+'',f)
         words = [z.translate(table, string.punctuation) for z in words]
         words = filter(lambda x: len(tok.WordTokenize(x)) >= min_word, words)
         words = [tok.WordTokenize(z) for z in words]
-        
-        #print "total sentence for process: ", len(words)
-        #print "total unique words(vocabulary): ", len(self.word_constructor(words))
-        #print("Splitting sentence for vector done in %fs" % (time() - t0))
-        #print "\n"
         
         return words
     
@@ -109,4 +98,3 @@ class Loader:
         else:
             words = filter(lambda x: len(tok.WordTokenize(x)) >= min_word, words)
         return words
-

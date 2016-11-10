@@ -11,7 +11,7 @@ from collections import defaultdict
 from math import log,exp
 import re,sys
 
-class NGramStack( ):
+class NGramStack():
     """
       A stack object designed to pop and push word 
       tokens onto an N-gram stack of fixed max-length.
@@ -44,8 +44,8 @@ class NGramStack( ):
         """
         self.s = []
         
-class ModifiedKneserNey:
-    def __init__( self, order=3, sb="<s>", se="</s>" ):
+class ModifiedKneserNey():
+    def __init__( self, order=2, sb="<s>", se="</s>" ):
         self.sb        = sb
         self.se        = se
         self.order     = order
@@ -100,13 +100,15 @@ class ModifiedKneserNey:
           training corpus, then discount D_2 would be applied.
 
         """
-
+        ## Ada problem per 9-Nov-2016, klo data train dikit bisa menimbulkan minus, jadinya math error ##
         for o in xrange(self.order-1):
             Y = self.CoC[o+1][0] / (self.CoC[o+1][0]+2*self.CoC[o+1][1])
             #Compute all the D_i based on the formula
             for i in xrange(3):
                 if self.CoC[o+1][i]>0:
-                    self.discounts[o][i] = (i+1) - (i+2)*Y * (self.CoC[o+1][i+1]/self.CoC[o+1][i])
+                    discount =  (i+1) - (i+2)*Y * (self.CoC[o+1][i+1]/self.CoC[o+1][i])
+                    assert  discount > 0., 'Negative discount occur , please add more data, or try to reduce N'
+                    self.discounts[o][i] = discount
                 else:
                     self.discounts[o][i] = (i+1)
 
@@ -129,7 +131,7 @@ class ModifiedKneserNey:
                 c[2] += 1.
 
         #Compute the discount mass by summing over the D_i*N_i 
-        d = sum([ self.discounts[order][i]*c[i] for i in xrange(len(c)) ])
+        d = sum([ self.discounts[order][i]*c[i] for i in xrange(len(c))])
         return d
 
     def kneser_ney_discounting( self, vect ):
@@ -154,18 +156,18 @@ class ModifiedKneserNey:
 
                 #Now count all N-grams in the current window
                 #These will be of span <= self.order
-                self._kn_recurse( ngram, len(ngram)-2 )
+                self._kn_recurse( ngram, len(ngram)-2)
 
             #Now push the sentence-end token onto the stack
             ngram = self.ngrams.push(self.se)
-            self._kn_recurse( ngram, len(ngram)-2 )
+            self._kn_recurse( ngram, len(ngram)-2)
 
             #Clear the stack for the next sentence
             self.ngrams.clear()
         
-        self._compute_counts_of_counts ( )
-        self._compute_discounts( )
-
+        self._compute_counts_of_counts ()
+        self._compute_discounts()
+        
         return
 
     def _kn_recurse( self, ngram_stack, i ):
@@ -175,10 +177,10 @@ class ModifiedKneserNey:
         if i==-1 and ngram_stack[0]==self.sb:
             return
 
-        o     = len(ngram_stack)
+        o = len(ngram_stack)
         numer = " ".join(ngram_stack[o-(i+2):])
         denom = " ".join(ngram_stack[o-(i+2):o-1])
-        self.numerators[  i][numer] += 1.
+        self.numerators[i][numer] += 1.
         self.denominators[i][denom] += 1.
  
         #For Modified Kneser-Ney we need to track 
@@ -258,7 +260,7 @@ class ModifiedKneserNey:
 
         return probability
 
-    def train( self ):
+    def train(self):
         """
              \1-grams:
              p(a_z)  a_z  bow(a_z)    
@@ -269,12 +271,13 @@ class ModifiedKneserNey:
         """
         #Handle the Unigrams
         self.mKNeyEstimate={}
-        d    = self._get_discount( 0, self.sb )
+        d = self._get_discount( 0, self.sb )
         #ModKN discount
         lmda = d / self.denominators[0][self.sb]
         first=-99.00000
-        #self.mKNeyEstimate[self.sb]=(("proba",first),("bow",log(lmda, 10.)),("count",1.),("n",1))
+
         self.mKNeyEstimate[self.sb]=(first, log(lmda, 10.), 1, 1)
+
         for key in sorted(self.UN.iterkeys()):
             if key==self.se:
                 self.mKNeyEstimate[key]=(log(self.UN[key]/self.UD, 10.), 0.0, self.UN[key], 1)
@@ -300,6 +303,7 @@ class ModifiedKneserNey:
                 lmda  = d / self.denominators[o+1][key]
                 #Compute the interpolated N-gram probability
                 prob = self._compute_interpolated_prob( key )
+ 
                 self.mKNeyEstimate[key]=(log(prob, 10.),log(lmda, 10.),self.numerators[o][key],2)
 
         #Handle the N-order N-grams

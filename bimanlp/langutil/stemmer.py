@@ -44,17 +44,12 @@
 ##      yang diperoleh adalah asap sebagai rootnya
 #####################################################################################################################################
 
-import string, re,sys
+import re
 from collections import defaultdict
 from tokenizer import tokenize
 from collections import OrderedDict
 
-if __package__ is None:
-   from os import path
-   sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-   from utils.autovivified import AutoVivification
-else:
-   from utils.autovivified import AutoVivification
+from bimanlp.utils.autovivified import AutoVivification
    
 class ChaosStemmer:
   ###### Define class attribute ######

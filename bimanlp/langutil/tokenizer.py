@@ -13,22 +13,21 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #####################################################################################
-
 import re
 import string
 
-if __package__ is None:
-   from os import sys, path
-   sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-   from utils.errors import StopWordMustList
-else:
-   from utils.errors import StopWordMustList
+from bimanlp.utils.errors import StopWordMustList
 
 class tokenize():
-   def WordTokenize(self, sentence, stopword=None, removepunct=False):
+   def WordTokenize(self, sentence, stopword=None, removepunct=False, splitby='space'):
        # Split kalimat kedalam kata-kata terpisah berdasar 'spasi'
 
-       words = re.split(r'\s',sentence)
+       if splitby.strip().lower()=='space':
+           words = re.split(r'\s',sentence)
+       elif splitby.strip().lower()=='word':
+           words = re.split('(\w+)?', sentence)
+       else:
+           raise NotImplementedError
 
        if removepunct:
            # Buat translation table untuk digunakan di string.translate
@@ -40,7 +39,7 @@ class tokenize():
            words = [z.translate(table,string.punctuation).strip() for z in words]
 
        # Hapus seluruh empty char pada list
-       words = filter(lambda x: x!='', words)
+       words = [x.strip().lower() for x in words if x.strip()]
 
        # Hapus kata yang berada dalam stopwords
        if stopword!=None:

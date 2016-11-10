@@ -61,7 +61,7 @@ class SimpleGoodTuring():
 
     def train(self,lm):
         Z = self.sgtZ()
-
+    
         # Use Regression analysis to find the "line of best fit"
         #    log(Z) = a*log(r) + b to the pairs of values in the log r and log Z columns
         slope, intercept, r_value, p_value, std_err = stats.linregress(log(Z.keys()),log(Z.values()))

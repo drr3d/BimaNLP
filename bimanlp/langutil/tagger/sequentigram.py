@@ -63,7 +63,7 @@ from nltk.tokenize import RegexpTokenizer
 from nltk.tag import DefaultTagger
 from nltk.tag.sequential import UnigramTagger,BigramTagger,TrigramTagger,RegexpTagger
 
-from langutil.tokenizer import tokenize
+from bimanlp.langutil.tokenizer import tokenize
 
 class NGramTag():
     def __init__(self, corpusroot, corpusname):
