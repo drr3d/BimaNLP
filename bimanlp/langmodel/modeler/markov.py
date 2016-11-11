@@ -222,7 +222,7 @@ class NGramModels:
                             self.vocab[k] = SimpleVocab(count=v, estimator=logprob)
                         else:
                             if self.normalize_logprob:
-                                logprob = exp(mmle.trainle(v,self.total_word))
+                                logprob = exp(mle.trainle(v,self.total_word))
                             else:
                                 logprob = mle.train(v,self.total_word)
                             self.vocab[k] = SimpleVocab(count=v, estimator=logprob)
