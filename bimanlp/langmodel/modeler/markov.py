@@ -172,8 +172,11 @@ class NGramModels:
                     self.finalmodel[tmpN]=self.vocab
                     self.vocab={}
                     tmpN = len(k.split(' '))
-
-                self.vocab[k] = SimpleVocab(count=int(v[2]), estimator=v[0])
+                
+                if self.normalize_logprob:
+                    self.vocab[k] = SimpleVocab(count=int(v[2]), estimator=exp(v[0]), discount=exp(v[1]))
+                else:
+                    self.vocab[k] = SimpleVocab(count=int(v[2]), estimator=v[0], discount=v[1])
 
             self.finalmodel[tmpN]=self.vocab
             del self.vocab
@@ -213,19 +216,19 @@ class NGramModels:
                                 logprob = exp(mle.train(v,self.total_word,ls=True,V=V))
                             else:
                                 logprob = mle.train(v,self.total_word,ls=True,V=V)
-                            self.vocab[k] = SimpleVocab(count=v, estimator=logprob)
+                            self.vocab[k] = SimpleVocab(count=v, estimator=logprob, discount=1)
                         elif optimizer =='sgt':
                             if self.normalize_logprob:
                                 logprob = exp(sgtSmoothProb[k])
                             else:
                                 logprob = sgtSmoothProb[k]
-                            self.vocab[k] = SimpleVocab(count=v, estimator=logprob)
+                            self.vocab[k] = SimpleVocab(count=v, estimator=logprob, discount=p0)
                         else:
                             if self.normalize_logprob:
                                 logprob = exp(mle.train(v,self.total_word))
                             else:
                                 logprob = mle.train(v,self.total_word)
-                            self.vocab[k] = SimpleVocab(count=v, estimator=logprob)
+                            self.vocab[k] = SimpleVocab(count=v, estimator=logprob, discount=1)
                     elif i ==2:
                         """
                         Perlu diingat motivasi dibalik NGram LM adalah:
@@ -243,19 +246,19 @@ class NGramModels:
                                 logprob = exp(mle.train(v,CWi,ls=True,V=V))
                             else:
                                 logprob = mle.train(v,CWi,ls=True,V=V)
-                            self.vocab[k] = SimpleVocab(count=v, estimator=logprob)
+                            self.vocab[k] = SimpleVocab(count=v, estimator=logprob, discount=1)
                         elif optimizer =='sgt':
                             if self.normalize_logprob:
                                 logprob = exp(sgtSmoothProb[k])
                             else:
                                 logprob = sgtSmoothProb[k]
-                            self.vocab[k] = SimpleVocab(count=v, estimator=logprob)
+                            self.vocab[k] = SimpleVocab(count=v, estimator=logprob, discount=p0)
                         else:
                             if self.normalize_logprob:
                                 logprob = exp(mle.train(v,CWi))
                             else:
                                 logprob = mle.train(v,CWi)
-                            self.vocab[k] = SimpleVocab(count=v, estimator=logprob)
+                            self.vocab[k] = SimpleVocab(count=v, estimator=logprob, discount=1)
                     else:
                         #######################################################################################
                         # P(Wi, Wj, Wk) = C (Wi, Wj, Wk) / N <= untuk Trigram
@@ -268,19 +271,19 @@ class NGramModels:
                                 logprob = exp(mle.train(v,CWi,ls=True,V=V))
                             else:
                                 logprob = mle.train(v,CWi,ls=True,V=V)
-                            self.vocab[k] = SimpleVocab(count=v, estimator=logprob)
+                            self.vocab[k] = SimpleVocab(count=v, estimator=logprob, discount=1)
                         elif optimizer =='sgt':
                             if self.normalize_logprob:
                                 logprob = exp(sgtSmoothProb[k])
                             else:
                                 logprob = sgtSmoothProb[k]
-                            self.vocab[k] = SimpleVocab(count=v, estimator=logprob)
+                            self.vocab[k] = SimpleVocab(count=v, estimator=logprob, discount=p0)
                         else:
                             if self.normalize_logprob:
                                 logprob = exp(mle.train(v,CWi))
                             else:
                                 logprob = mle.train(v,CWi)
-                            self.vocab[k] = SimpleVocab(count=v, estimator=logprob)
+                            self.vocab[k] = SimpleVocab(count=v, estimator=logprob, discount=1)
 
                 self.finalmodel[i]=self.vocab                
                 self.vocab={}

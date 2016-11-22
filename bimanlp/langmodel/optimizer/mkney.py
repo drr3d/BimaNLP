@@ -43,9 +43,16 @@ class NGramStack():
            Empty all the words from the stack.
         """
         self.s = []
-        
+
+class ModifiedKneserNeyException(Exception):
+    pass
+
 class ModifiedKneserNey():
     def __init__( self, order=2, sb="<s>", se="</s>" ):
+        # Under investigation for N < 2, cause error
+        if order < 2:
+            raise ModifiedKneserNeyException("Please use N > 1...")
+
         self.sb        = sb
         self.se        = se
         self.order     = order
@@ -102,15 +109,15 @@ class ModifiedKneserNey():
         """
         ## Ada problem per 9-Nov-2016, klo data train dikit bisa menimbulkan minus, jadinya math error ##
         for o in xrange(self.order-1):
-            Y = self.CoC[o+1][0] / (self.CoC[o+1][0]+2*self.CoC[o+1][1])
+            Y = float(self.CoC[o+1][0] / (self.CoC[o+1][0]+2*self.CoC[o+1][1]))
             #Compute all the D_i based on the formula
             for i in xrange(3):
                 if self.CoC[o+1][i]>0:
-                    discount =  (i+1) - (i+2)*Y * (self.CoC[o+1][i+1]/self.CoC[o+1][i])
+                    discount =  float((i+1) - (i+2)*Y * (self.CoC[o+1][i+1]/self.CoC[o+1][i]))
                     assert  discount > 0., 'Negative discount occur , please add more data, or try to reduce N'
                     self.discounts[o][i] = discount
                 else:
-                    self.discounts[o][i] = (i+1)
+                    self.discounts[o][i] = float(i+1)
 
         return 
 
@@ -228,8 +235,9 @@ class ModifiedKneserNey():
         """
         probability = 0.0
         ngram_stack = ngram.split(" ")
-        probs       = [ 1e-99 for i in xrange(len(ngram_stack)) ]
-        o           = len(ngram_stack)
+        probs = [ 1e-99 for i in xrange(len(ngram_stack)) ]
+        o = len(ngram_stack)
+        dics = 0.0
 
         if not ngram_stack[-1]==self.sb:
             probs[0] = self.UN[ngram_stack[-1]] / self.UD
@@ -248,9 +256,11 @@ class ModifiedKneserNey():
                 #  lmda:        The un-normalized 'back-off' weight, bow(a_)
                 #  probs[i]:    The next lower-order, interpolated N-gram 
                 #               probability corresponding to p(_z)
+
                 #ModKN discount
                 d = self._get_discount( i, dID )
-                lmda        = d / self.denominators[i][dID]
+                lmda = d / self.denominators[i][dID]
+                disc = lmda
                 probs[i+1]  = probs[i+1] + lmda * probs[i]
                 probability = probs[i+1]
 
@@ -258,7 +268,7 @@ class ModifiedKneserNey():
             #If we still have nothing, return the unigram probability
             probability = probs[0]
 
-        return probability
+        return probability, disc
 
     def train(self):
         """
@@ -272,6 +282,7 @@ class ModifiedKneserNey():
         #Handle the Unigrams
         self.mKNeyEstimate={}
         d = self._get_discount( 0, self.sb )
+
         #ModKN discount
         lmda = d / self.denominators[0][self.sb]
         first=-99.00000
@@ -283,32 +294,29 @@ class ModifiedKneserNey():
                 self.mKNeyEstimate[key]=(log(self.UN[key]/self.UD, 10.), 0.0, self.UN[key], 1)
                 continue
 
-            d    = self._get_discount( 0, key )
             #ModKN discount
+            d = self._get_discount( 0, key )
             lmda = d / self.denominators[0][key]
             
-            self.mKNeyEstimate[key]=(log(self.UN[key]/self.UD, 10.),log(lmda, 10.),self.UN[key],1)
+            self.mKNeyEstimate[key]=(log(self.UN[key]/self.UD, 10.), log(lmda, 10.), self.UN[key], 1)
         
         #Handle the middle-order N-grams
         for o in xrange(0,self.order-2):
             for key in sorted(self.numerators[o].iterkeys()):
                 if key.endswith(self.se):
                     #No back-off prob for N-grams ending in </s>
-                    prob = self._compute_interpolated_prob( key )
-                    self.mKNeyEstimate[key]=(log(prob, 10.),0.0,self.numerators[o][key],2)
+                    prob, disc = self._compute_interpolated_prob( key )
+                    self.mKNeyEstimate[key]=(log(prob, 10.), log(disc, 10.), self.numerators[o][key], 2)
                     continue
-                d = self._get_discount( o+1, key )
-                #Compute the back-off weight
-                #ModKN discount
-                lmda  = d / self.denominators[o+1][key]
+
                 #Compute the interpolated N-gram probability
-                prob = self._compute_interpolated_prob( key )
+                prob, disc = self._compute_interpolated_prob( key )
  
-                self.mKNeyEstimate[key]=(log(prob, 10.),log(lmda, 10.),self.numerators[o][key],2)
+                self.mKNeyEstimate[key]=(log(prob, 10.), log(disc, 10.), self.numerators[o][key], 2)
 
         #Handle the N-order N-grams
         for key in sorted(self.numerators[self.order-2].iterkeys()):
             #Compute the interpolated N-gram probability
-            prob = self._compute_interpolated_prob( key )
-            self.mKNeyEstimate[key]=(log(prob, 10.),0.0,self.numerators[self.order-2][key],3)
+            prob, disc = self._compute_interpolated_prob( key )
+            self.mKNeyEstimate[key]=(log(prob, 10.), log(disc, 10.), self.numerators[self.order-2][key], 3)
         return

@@ -13,18 +13,19 @@ def NGramLangModel(verbose=False):
     cl = Loader(MAIN_DIR+DS_DIR)
     f = cl.loadLarge(txtdata,lazy_load=True)
     w = cl.processRaw(f,to_lower=True)
-    tokenized_sentence = cl.rawForLangmodel(w,punct_remove=True,to_token=True)
+    tokenized_sentence = cl.rawForLangmodel(w, punct_remove=True, to_token=True)
 
-    lms = NGramModels(ngram=3, normalize_logprob=False)
+    lms = NGramModels(ngram=3, normalize_logprob=True)
     # njump parameter belum bisa digunakan untuk modkn optimizer
-    models = lms.train(tokenized_sentence, optimizer='modkn',\
+    models = lms.train(tokenized_sentence, optimizer='ls',\
                        separate=True, njump=0, \
                        verbose=verbose)
     if verbose:
     	for k,v in models.iteritems():
     		for k2,v2 in v.iteritems():
     			print k2,v2
+
     print lms.perplexity
     print "##########################################################"
 
-NGramLangModel(verbose=True)
+NGramLangModel(verbose=False)
